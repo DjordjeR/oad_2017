@@ -139,6 +139,9 @@ public class OADTurkUI extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton1MouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jButton1MouseEntered(evt);
+            }
         });
 
         jButton2.setText("Register");
@@ -274,6 +277,11 @@ public class OADTurkUI extends javax.swing.JFrame {
         close();
         user.setVisible(true);
     }//GEN-LAST:event_jButton2MouseClicked
+
+    private void jButton1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseEntered
+        // TODO add your handling code here:
+        //jButton1.setForeground(Color.red);
+    }//GEN-LAST:event_jButton1MouseEntered
 
     /**
      * @param args the command line arguments
