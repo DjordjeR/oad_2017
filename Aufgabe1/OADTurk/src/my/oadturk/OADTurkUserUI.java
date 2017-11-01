@@ -7,6 +7,8 @@ package my.oadturk;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
@@ -692,6 +694,11 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jButton3.setText("Sign Out");
         jButton3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton3MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -746,16 +753,13 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         //close();
         user.setVisible(true);
     }//GEN-LAST:event_jButton7MouseClicked
-    
 
-    //sign out
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         // TODO add your handling code here:
-        OADTurkUI  user = new OADTurkUI();
+        OADTurkUI login = new OADTurkUI();
         close();
-        user.setVisible(true);
-        
-    }
+        login.setVisible(true);
+    }//GEN-LAST:event_jButton3MouseClicked
 
     /**
      * @param args the command line arguments
@@ -847,10 +851,11 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     // End of variables declaration//GEN-END:variables
-}
 
-private void close()
+        private void close()
     {
         WindowEvent winClosing = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(winClosing);
     }
+    
+}
