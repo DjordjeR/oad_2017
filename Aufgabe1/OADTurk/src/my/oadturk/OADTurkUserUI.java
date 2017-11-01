@@ -746,6 +746,16 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         //close();
         user.setVisible(true);
     }//GEN-LAST:event_jButton7MouseClicked
+    
+
+    //sign out
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        // TODO add your handling code here:
+        OADTurkUI  user = new OADTurkUI();
+        close();
+        user.setVisible(true);
+        
+    }
 
     /**
      * @param args the command line arguments
@@ -838,3 +848,9 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField8;
     // End of variables declaration//GEN-END:variables
 }
+
+private void close()
+    {
+        WindowEvent winClosing = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(winClosing);
+    }
