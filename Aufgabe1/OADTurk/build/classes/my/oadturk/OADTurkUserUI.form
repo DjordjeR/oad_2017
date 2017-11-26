@@ -229,6 +229,9 @@
               </Layout>
               <SubComponents>
                 <Container class="javax.swing.JTabbedPane" name="jTabbedPane2">
+                  <Events>
+                    <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="jTabbedPane2StateChanged"/>
+                  </Events>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
                   <SubComponents>
@@ -258,11 +261,11 @@
                                           <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                               <Component id="jPanel13" max="32767" attributes="0"/>
-                                              <Component id="jPanel14" pref="0" max="32767" attributes="0"/>
+                                              <Component id="jPanel14" pref="490" max="32767" attributes="0"/>
                                           </Group>
                                           <EmptySpace min="0" pref="205" max="32767" attributes="0"/>
                                       </Group>
-                                      <Component id="jLabel9" alignment="0" pref="1278" max="32767" attributes="0"/>
+                                      <Component id="jLabel9" alignment="0" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
@@ -307,6 +310,8 @@
                                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                                       <Component id="jButton1" min="-2" pref="154" max="-2" attributes="0"/>
                                       <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="jButton8" min="-2" pref="158" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="jButton5" min="-2" pref="158" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                                   </Group>
@@ -317,7 +322,10 @@
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace pref="20" max="32767" attributes="0"/>
                                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Component id="jButton5" pref="32" max="32767" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jButton5" alignment="3" pref="32" max="32767" attributes="0"/>
+                                              <Component id="jButton8" alignment="3" pref="32" max="32767" attributes="0"/>
+                                          </Group>
                                           <Component id="jButton1" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
@@ -328,7 +336,7 @@
                           <SubComponents>
                             <Component class="javax.swing.JButton" name="jButton5">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="Submit"/>
+                                <Property name="text" type="java.lang.String" value="Next"/>
                                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                   <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
                                     <LineBorder>
@@ -362,6 +370,29 @@
                                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jButton1MouseClicked"/>
                               </Events>
                             </Component>
+                            <Component class="javax.swing.JButton" name="jButton8">
+                              <Properties>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                                  <Font name="Ubuntu" size="15" style="0"/>
+                                </Property>
+                                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                                  <Color blue="0" green="0" id="black" palette="1" red="0" type="palette"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" value="Verify"/>
+                                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                                  <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                                    <LineBorder/>
+                                  </Border>
+                                </Property>
+                                <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+                                  <Color id="Hand Cursor"/>
+                                </Property>
+                              </Properties>
+                              <Events>
+                                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jButton8MouseClicked"/>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton8ActionPerformed"/>
+                              </Events>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Component class="javax.swing.JLabel" name="jLabel4">
@@ -376,7 +407,6 @@
                               <Color blue="80" green="80" id="gray" palette="1" red="80" type="palette"/>
                             </Property>
                             <Property name="horizontalAlignment" type="int" value="0"/>
-                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Question question question question   question question question question  &lt;br&gt; question question question?&lt;/html&gt;"/>
                             <Property name="horizontalTextPosition" type="int" value="0"/>
                             <Property name="opaque" type="boolean" value="true"/>
                           </Properties>
@@ -528,7 +558,6 @@
                               <Color blue="80" green="80" id="gray" palette="1" red="80" type="palette"/>
                             </Property>
                             <Property name="horizontalAlignment" type="int" value="0"/>
-                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Question question question question   question question question question  &lt;br&gt; question question question?&lt;/html&gt;"/>
                             <Property name="horizontalTextPosition" type="int" value="0"/>
                             <Property name="opaque" type="boolean" value="true"/>
                           </Properties>
