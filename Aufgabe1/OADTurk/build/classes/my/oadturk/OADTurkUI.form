@@ -66,17 +66,15 @@
                       </Group>
                   </Group>
               </Group>
-              <Group type="102" attributes="0">
-                  <EmptySpace min="-2" pref="611" max="-2" attributes="0"/>
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace min="-2" pref="629" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
+                      <Component id="jTextField1" min="-2" pref="242" max="-2" attributes="0"/>
+                      <Component id="jPasswordField1" min="-2" pref="242" max="-2" attributes="0"/>
+                      <Component id="jButton1" min="-2" pref="242" max="-2" attributes="0"/>
                       <Component id="jButton2" min="-2" pref="242" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="jTextField1" alignment="0" pref="242" max="32767" attributes="0"/>
-                          <Component id="jPasswordField1" max="32767" attributes="0"/>
-                          <Component id="jButton1" max="32767" attributes="0"/>
-                      </Group>
                   </Group>
-                  <EmptySpace min="0" pref="650" max="32767" attributes="0"/>
+                  <EmptySpace pref="632" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -144,7 +142,6 @@
           </Properties>
           <AccessibilityProperties>
             <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="input_username"/>
-            <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value="Enter your username"/>
           </AccessibilityProperties>
           <Events>
             <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTextField1FocusGained"/>

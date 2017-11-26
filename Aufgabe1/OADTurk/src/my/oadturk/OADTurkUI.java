@@ -165,14 +165,13 @@ public class OADTurkUI extends javax.swing.JFrame {
                         .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(611, 611, 611)
+                .addGap(629, 629, 629)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)
-                        .addComponent(jPasswordField1)
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(0, 650, Short.MAX_VALUE))
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(632, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -193,7 +192,6 @@ public class OADTurkUI extends javax.swing.JFrame {
         );
 
         jTextField1.getAccessibleContext().setAccessibleName("input_username");
-        jTextField1.getAccessibleContext().setAccessibleDescription("Enter your username");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -266,13 +264,57 @@ public class OADTurkUI extends javax.swing.JFrame {
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // TODO add your handling code here:
-        OADTurkUserUI user = new OADTurkUserUI();
-        close();
-        user.setVisible(true);
+        //iz baze uzeti usernam i pass vidjeti da li je ok
+        SessionInfo session;
+        
+        char[] text1 = jPasswordField1.getPassword();
+        String text = new String(text1);
+        if(jTextField1.getText().equals("1") && text.equals("1"))
+        {
+            session = new SessionInfo();
+            session.id = 1;
+            session.name = "User Userman";
+            session.level = 1;
+            session.user = jTextField1.getText();
+
+            OADTurkUserUI user = new OADTurkUserUI(session);
+            close();
+            user.setVisible(true);
+        }
+        else if(jTextField1.getText().equals("creator") && text.equals("creator"))
+        {
+            session = new SessionInfo();
+            session.id = 1;
+            session.name = "Ceator Creatori";
+            session.level = 2;
+            session.user = jTextField1.getText();
+
+            OADTurkUserUI user = new OADTurkUserUI(session);
+            close();
+            user.setVisible(true);
+        }
+        else if(jTextField1.getText().equals("admin") && text.equals("admin"))
+        {
+            session = new SessionInfo();
+            session.id = 1;
+            session.name = "Admin Adminstratore";
+            session.level = 3;
+            session.user = jTextField1.getText();
+
+            OADTurkUserUI user = new OADTurkUserUI(session);
+            close();
+            user.setVisible(true);
+        }
+        else
+        {
+            jLabel2.setText("ERROR: Invalid Username or Password!");
+            jLabel2.setForeground(Color.red);
+        }
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
         // TODO add your handling code here:
+        
         OADTurkRegisterUI user = new OADTurkRegisterUI();
         close();
         user.setVisible(true);

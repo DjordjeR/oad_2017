@@ -7,9 +7,17 @@ package my.oadturk;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 
@@ -22,8 +30,12 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     /**
      * Creates new form OADTurkUserUI
      */
-    public OADTurkUserUI() {
+    public static SessionInfo session;
+    public OADTurkUserUI(SessionInfo ses) {
+        session = ses;
         initComponents();
+        
+        jLabel1.setText(session.name + " (" + session.getLevelText() + ")");
         
         JLabel lab1 = new JLabel("Define");
         lab1.setPreferredSize(new Dimension(240, 30));
@@ -44,9 +56,6 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         JLabel lab5 = new JLabel("Settings");
         lab5.setPreferredSize(new Dimension(235, 30));
         jTabbedPane1.setTabComponentAt(4, lab5);
-        
-        
-        
         
         
         JLabel lab6 = new JLabel("OAD");
@@ -75,9 +84,9 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jButton3.setContentAreaFilled(false);
         jButton5.setFocusPainted(false);
         jButton5.setContentAreaFilled(false);
-        jButton8.setFocusPainted(false);
-        jButton8.setContentAreaFilled(false);
- 
+        
+        jButton1.setFocusPainted(false);
+        jButton1.setContentAreaFilled(false);
         
         //jToggleButton1.setFocusPainted(false);
         //jToggleButton1.setContentAreaFilled(false);
@@ -104,6 +113,22 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         
         jButton7.setFocusPainted(false);
         jButton7.setContentAreaFilled(false);
+
+        jLabel6.setText("adsjlkasdjklasjdkljklasdjkl ajsdlkjas");
+        /*6  10
+          11 23 image dim: 360 * 120
+        */
+        ImageIcon icon = new ImageIcon("question122.jpg");
+        jLabel10.setIcon(icon); // NOI18N
+        jLabel10.setVerticalAlignment(jLabel10.CENTER);
+        
+       
+        jLabel11.setIcon(icon); // NOI18N
+        jLabel11.setVerticalAlignment(jLabel11.CENTER);
+        
+        
+        jLabel23.setText("adsjlkasdjklasjdkljklasdjkl ajsdlkjas");
+        
     }
 
     /**
@@ -127,16 +152,21 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jButton5 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jPanel11 = new javax.swing.JPanel();
         jCheckBox1 = new javax.swing.JCheckBox();
+        jLabel6 = new javax.swing.JLabel();
         jPanel12 = new javax.swing.JPanel();
         jCheckBox3 = new javax.swing.JCheckBox();
+        jLabel23 = new javax.swing.JLabel();
         jPanel13 = new javax.swing.JPanel();
         jCheckBox2 = new javax.swing.JCheckBox();
+        jLabel10 = new javax.swing.JLabel();
         jPanel14 = new javax.swing.JPanel();
         jCheckBox4 = new javax.swing.JCheckBox();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
@@ -239,34 +269,41 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jButton5.setText("Submit");
         jButton5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(85, 85, 85)));
         jButton5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton5MouseClicked(evt);
+            }
+        });
 
-        jButton8.setText("Create LU");
-        jButton8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(85, 85, 85)));
-        jButton8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton1.setText("Add LU");
+        jButton1.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray));
+        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addContainerGap(14, Short.MAX_VALUE)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(20, Short.MAX_VALUE)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(14, 14, 14))
         );
-
-        jButton5.getAccessibleContext().setAccessibleParent(jButton5);
-        jButton8.getAccessibleContext().setAccessibleParent(jPanel5);
 
         jLabel4.setBackground(java.awt.Color.white);
         jLabel4.setFont(new java.awt.Font("Ubuntu Light", 0, 18)); // NOI18N
@@ -278,8 +315,6 @@ public class OADTurkUserUI extends javax.swing.JFrame {
 
         jPanel11.setBackground(java.awt.Color.white);
 
-        jCheckBox1.setText("Answer answer answer answer answer");
-
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
         jPanel11Layout.setHorizontalGroup(
@@ -287,41 +322,37 @@ public class OADTurkUserUI extends javax.swing.JFrame {
             .addGroup(jPanel11Layout.createSequentialGroup()
                 .addGap(33, 33, 33)
                 .addComponent(jCheckBox1)
+                .addGap(29, 29, 29)
+                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel11Layout.setVerticalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jCheckBox1)
-                .addGap(59, 59, 59))
+            .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jCheckBox1, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
         );
 
         jPanel12.setBackground(java.awt.Color.white);
         jPanel12.setPreferredSize(new java.awt.Dimension(603, 151));
-
-        jCheckBox3.setText("Answer answer answer answer answer");
 
         javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
         jPanel12.setLayout(jPanel12Layout);
         jPanel12Layout.setHorizontalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel12Layout.createSequentialGroup()
-                .addGap(36, 36, 36)
+                .addGap(33, 33, 33)
                 .addComponent(jCheckBox3)
-                .addContainerGap(184, Short.MAX_VALUE))
+                .addGap(26, 26, 26)
+                .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(47, 47, 47))
         );
         jPanel12Layout.setVerticalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel12Layout.createSequentialGroup()
-                .addGap(61, 61, 61)
-                .addComponent(jCheckBox3)
-                .addContainerGap(67, Short.MAX_VALUE))
+            .addComponent(jCheckBox3, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
+            .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         jPanel13.setBackground(java.awt.Color.white);
-
-        jCheckBox2.setText("Answer answer answer answer answer");
 
         javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
         jPanel13.setLayout(jPanel13Layout);
@@ -330,36 +361,42 @@ public class OADTurkUserUI extends javax.swing.JFrame {
             .addGroup(jPanel13Layout.createSequentialGroup()
                 .addGap(33, 33, 33)
                 .addComponent(jCheckBox2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(29, 29, 29)
+                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(47, Short.MAX_VALUE))
         );
         jPanel13Layout.setVerticalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel13Layout.createSequentialGroup()
-                .addContainerGap(66, Short.MAX_VALUE)
-                .addComponent(jCheckBox2)
-                .addGap(61, 61, 61))
+            .addComponent(jCheckBox2, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
+            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         jPanel14.setBackground(java.awt.Color.white);
-
-        jCheckBox4.setText("Answer answer answer answer answer");
 
         javax.swing.GroupLayout jPanel14Layout = new javax.swing.GroupLayout(jPanel14);
         jPanel14.setLayout(jPanel14Layout);
         jPanel14Layout.setHorizontalGroup(
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel14Layout.createSequentialGroup()
-                .addGap(40, 40, 40)
+                .addGap(33, 33, 33)
                 .addComponent(jCheckBox4)
-                .addContainerGap(173, Short.MAX_VALUE))
+                .addGap(33, 33, 33)
+                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(47, 47, 47))
         );
         jPanel14Layout.setVerticalGroup(
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel14Layout.createSequentialGroup()
-                .addGap(59, 59, 59)
-                .addComponent(jCheckBox4)
-                .addContainerGap(68, Short.MAX_VALUE))
+            .addComponent(jCheckBox4, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE)
+            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
+
+        jLabel9.setBackground(java.awt.Color.white);
+        jLabel9.setFont(new java.awt.Font("Ubuntu Light", 0, 18)); // NOI18N
+        jLabel9.setForeground(java.awt.Color.gray);
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("<html>Question question question question   question question question question  <br> question question question?</html>");
+        jLabel9.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jLabel9.setOpaque(true);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -378,24 +415,27 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                         .addGap(38, 38, 38)
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 224, Short.MAX_VALUE)))
+                            .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addGap(0, 205, Short.MAX_VALUE))
+                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 1278, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(42, 42, 42)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                    .addComponent(jPanel13, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel12, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel14, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -546,18 +586,22 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jButton4.setText("Save");
         jButton4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(85, 85, 85)));
 
+        jTextField5.setBackground(java.awt.Color.white);
         jTextField5.setFont(new java.awt.Font("Ubuntu Light", 0, 24)); // NOI18N
         jTextField5.setForeground(java.awt.Color.gray);
         jTextField5.setText("Max");
 
+        jTextField6.setBackground(java.awt.Color.white);
         jTextField6.setFont(new java.awt.Font("Ubuntu Light", 0, 24)); // NOI18N
         jTextField6.setForeground(java.awt.Color.gray);
         jTextField6.setText("Mustermann");
 
+        jTextField7.setBackground(java.awt.Color.white);
         jTextField7.setFont(new java.awt.Font("Ubuntu Light", 0, 24)); // NOI18N
         jTextField7.setForeground(java.awt.Color.gray);
         jTextField7.setText("MaxM");
 
+        jTextField8.setBackground(java.awt.Color.white);
         jTextField8.setFont(new java.awt.Font("Ubuntu Light", 0, 24)); // NOI18N
         jTextField8.setForeground(java.awt.Color.gray);
         jTextField8.setText("mustermann@me.com");
@@ -772,6 +816,35 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         login.setVisible(true);
     }//GEN-LAST:event_jButton3MouseClicked
 
+    private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
+        // TODO add your handling code here:
+            
+        jLabel4.setText("Question 2");
+        jLabel9.setText("Question 2");
+        
+         jLabel6.setText("Question 2");
+        /*6  10
+          11 23 image dim: 360 * 120
+        */
+        ImageIcon icon = new ImageIcon("question122.jpg");
+        jLabel10.setIcon(icon); // NOI18N
+        jLabel10.setVerticalAlignment(jLabel10.CENTER);
+        
+       
+        jLabel11.setIcon(icon); // NOI18N
+        jLabel11.setVerticalAlignment(jLabel11.CENTER);
+        
+        
+        jLabel23.setText("Question2");
+        
+    }//GEN-LAST:event_jButton5MouseClicked
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // TODO add your handling code here:
+        OADTurkNewLU login = new OADTurkNewLU();
+        login.setVisible(true);
+    }//GEN-LAST:event_jButton1MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -802,24 +875,28 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new OADTurkUserUI().setVisible(true);
+                new OADTurkUserUI(session).setVisible(true);
             }
         });
+        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
     private javax.swing.JCheckBox jCheckBox4;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
@@ -832,11 +909,14 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -864,6 +944,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField8;
     // End of variables declaration//GEN-END:variables
 
+    
         private void close()
     {
         WindowEvent winClosing = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
