@@ -14,6 +14,7 @@ import java.util.HashMap;
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import static my.oadturk.OADTurkUserUI.session;
 
 /**
  *
@@ -490,7 +491,7 @@ public class OADTurkNewLU extends javax.swing.JFrame {
         
         int approved = 1;
         
-        if(session.level == 1)
+        if(session.manager.users.get(session.id).level == 1)
             approved = 0;
         
         session.manager.insertLU(la_id, q, desc, dt, as1, as1t, as2, as2t, as3, as3t, as4, as4t, session.id, approved, cat, a1c, a2c, a3c, a4c);

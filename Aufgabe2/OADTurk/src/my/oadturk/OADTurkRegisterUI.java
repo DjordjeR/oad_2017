@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package my.oadturk;
 
 import java.awt.Color;
@@ -12,16 +7,13 @@ import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
-/**
- *
- * @author gaja
- */
+
 public class OADTurkRegisterUI extends javax.swing.JFrame {
 
-    /**
-     * Creates new form OADTurkRegisterUI
-     */
-    public OADTurkRegisterUI() {
+
+    public static SessionInfo session;
+    public OADTurkRegisterUI(SessionInfo ses) {
+        session = ses;
         initComponents();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -277,7 +269,7 @@ public class OADTurkRegisterUI extends javax.swing.JFrame {
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // TODO add your handling code here:
-        OADTurkUI login = new OADTurkUI();
+        OADTurkUI login = new OADTurkUI(session);
         close();
         login.setVisible(true);
     }//GEN-LAST:event_jButton1MouseClicked
@@ -367,11 +359,77 @@ public class OADTurkRegisterUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField5FocusLost
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        // TODO add your handling code here:
-        jLabel2.setText("The authentication E-Mail has been sent to your address. Please verify it and try Signing in. :)");
-        jLabel2.setForeground(new Color(121,187,108));
+        
+        String name = jTextField2.getText();
+        String surname = jTextField4.getText();
+        String email = jTextField3.getText();
+        String user = jTextField1.getText();
+        String password = jTextField5.getText();
+        
+        if(session.manager.userExists(user))
+        {
+            jLabel2.setText("That username is already taken!");
+            jLabel2.setForeground(Color.red);
+            return;
+        }
+        
+        if(session.manager.mailExists(email))
+        {
+            jLabel2.setText("That email is already taken!");
+            jLabel2.setForeground(Color.red);
+            return;
+        }
+        
+        if(password.length() < 4)
+        {
+            jLabel2.setText("Password must be at least 4 characters long!");
+            jLabel2.setForeground(Color.red);
+            return;
+        }
+        
+        if(user.length() < 4)
+        {
+            jLabel2.setText("Username must be at least 4 characters long!");
+            jLabel2.setForeground(Color.red);
+            return;
+        }
+        
+        if(name.length() < 2)
+        {
+            jLabel2.setText("First name must be at least 2 characters long!");
+            jLabel2.setForeground(Color.red);
+            return;
+        }
+        
+        if(surname.length() < 2)
+        {
+            jLabel2.setText("Surname must be at least 2 characters long!");
+            jLabel2.setForeground(Color.red);
+            return;
+        }
+        
+        if(!isValidEmailAddress(email))
+        {
+            jLabel2.setText("Email address is not valid!");
+            jLabel2.setForeground(Color.red);
+            return;
+        }
+        
+        session.manager.registerUser(user, name + " " + surname, name, surname, email, password, 1);
+        
+        jLabel2.setText("You are successfully registered! You can sign in now!");
+        jLabel2.setForeground(Color.green);
+        
     }//GEN-LAST:event_jButton2MouseClicked
-
+    
+    public boolean isValidEmailAddress(String email) 
+    {
+        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -402,7 +460,7 @@ public class OADTurkRegisterUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new OADTurkRegisterUI().setVisible(true);
+                new OADTurkRegisterUI(session).setVisible(true);
             }
         });
     }

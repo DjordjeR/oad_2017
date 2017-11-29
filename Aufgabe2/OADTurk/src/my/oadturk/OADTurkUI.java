@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -26,8 +27,14 @@ public class OADTurkUI extends javax.swing.JFrame {
     /**
      * Creates new form OADTurkUI
      */
-
-    public OADTurkUI() {
+    public static SessionInfo session;
+    public OADTurkUI(SessionInfo ses) {
+        
+        if(session == null)
+            session = new SessionInfo();
+        else
+            session = ses;
+        
         initComponents();
         
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -263,56 +270,13 @@ public class OADTurkUI extends javax.swing.JFrame {
     }//GEN-LAST:event_jPasswordField1FocusLost
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        // TODO add your handling code here:
-        //iz baze uzeti usernam i pass vidjeti da li je ok
-        SessionInfo session;
-        
+               
         char[] text1 = jPasswordField1.getPassword();
         String text = new String(text1);
-        if(jTextField1.getText().equals("1") && text.equals("1"))
+                
+        if(session.manager.loginUser(jTextField1.getText(), text))
         {
-            session = new SessionInfo();
-            session.id = 1;
-            session.first_name = "User";
-            session.surname = "Userman";
-            session.name = session.first_name + " " + session.surname;
-            session.mail = "user@oadturk.at";
-            session.password = text;
-            session.level = 1;
-            session.user = jTextField1.getText();
-
-            OADTurkUserUI user = new OADTurkUserUI(session);
-            close();
-            user.setVisible(true);
-        }
-        else if(jTextField1.getText().equals("creator") && text.equals("creator"))
-        {
-            session = new SessionInfo();
-            session.id = 2;
-            session.first_name = "Creator";
-            session.surname = "Creatori";
-            session.name = session.first_name + " " + session.surname;
-            session.mail = "creator@oadturk.at";
-            session.password = text;
-            session.level = 2;
-            session.user = jTextField1.getText();
-
-            OADTurkUserUI user = new OADTurkUserUI(session);
-            close();
-            user.setVisible(true);
-        }
-        else if(jTextField1.getText().equals("admin") && text.equals("admin"))
-        {
-            session = new SessionInfo();
-            session.id = 3;
-            session.first_name = "Admin";
-            session.surname = "Administratore";
-            session.name = session.first_name + " " + session.surname;
-            session.mail = "admin@oadturk.at";
-            session.password = text;
-            session.level = 3;
-            session.user = jTextField1.getText();
-
+            session.loginUser(jTextField1.getText());
             OADTurkUserUI user = new OADTurkUserUI(session);
             close();
             user.setVisible(true);
@@ -327,7 +291,7 @@ public class OADTurkUI extends javax.swing.JFrame {
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
         // TODO add your handling code here:
         
-        OADTurkRegisterUI user = new OADTurkRegisterUI();
+        OADTurkRegisterUI user = new OADTurkRegisterUI(session);
         close();
         user.setVisible(true);
     }//GEN-LAST:event_jButton2MouseClicked
@@ -367,7 +331,7 @@ public class OADTurkUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new OADTurkUI().setVisible(true);
+                new OADTurkUI(session).setVisible(true);
             }
         });
         

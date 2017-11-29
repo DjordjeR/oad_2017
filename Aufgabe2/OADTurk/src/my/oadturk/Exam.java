@@ -10,7 +10,9 @@ public class Exam
     public static final int MANUAL_EXAM = 1;
     public static final int AUTOMATIC_EXAM = 0;
     
+    public String name;
     public Calendar date;
+    public Calendar until;
     public int code;
     public int type;
     public int num_of_questions;
@@ -21,9 +23,11 @@ public class Exam
     // Saves LU Ids
     public ArrayList<Integer> lus = new ArrayList<>();
     
-    public Exam(Calendar d, int t, int num, int pts)
+    public Exam(String n, Calendar d, Calendar u, int t, int num, int pts)
     {
+        name = n;
         date = d;
+        until = u;
         type = t;
         num_of_questions = num;
         points_per_question = pts;
@@ -49,9 +53,11 @@ public class Exam
         lus.remove(lus.indexOf(q));
     }
     
-    public void editExam(Calendar d, int t, int num, int pts)
+    public void editExam(String n, Calendar d, Calendar u, int t, int num, int pts)
     {
+        name = n;
         date = d;
+        until = u;
         type = t;
         num_of_questions = num;
         points_per_question = pts;
