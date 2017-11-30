@@ -1,14 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package my.oadturk;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -20,28 +19,57 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.UIManager;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
-/**
- *
- * @author gaja
- */
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.UIManager;
+
+
 public class OADTurkUserUI extends javax.swing.JFrame {
 
-    /**
-     * Creates new form OADTurkUserUI
-     */
     public static SessionInfo session;
     public static DataManager manager;
     public int loaded_lu = 0;
+    public static int selected_la = 0;
+    
+    private JTable table_exam;
+    private DefaultTableModel dm_exam;
+    
+    private JTable table_results;
+    private DefaultTableModel dm_results;
+    
     public OADTurkUserUI(SessionInfo ses) {
         session = ses;
         manager = session.manager;
         initComponents();
         
-        jLabel1.setText(session.name + " (" + session.getLevelText() + ")");
+        jLabel1.setText(session.manager.users.get(session.id).name + " (" + session.getLevelText() + ")");
         
         JLabel lab1 = new JLabel("Creator Panel");
         lab1.setPreferredSize(new Dimension(240, 30));
@@ -82,7 +110,37 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         }
         
         jTabbedPane3.setTabPlacement(JTabbedPane.LEFT);
-
+        
+        for(HashMap.Entry<Integer, LearningApp> entry : manager.la.entrySet())
+        {
+            JLabel lab6 = new JLabel(entry.getValue().name);
+            lab6.setPreferredSize(new Dimension(150, 30));
+            jTabbedPane4.setTabComponentAt(entry.getKey(), lab6);
+        }
+        
+        jTabbedPane4.setTabPlacement(JTabbedPane.LEFT);
+        
+        JLabel lab6 = new JLabel("Settings");
+        lab6.setPreferredSize(new Dimension(150, 30));
+        jTabbedPane5.setTabComponentAt(0, lab6);
+        
+        JLabel lab7 = new JLabel("Administration");
+        lab7.setPreferredSize(new Dimension(150, 30));
+        jTabbedPane5.setTabComponentAt(1, lab7);
+        
+        if(session.manager.users.get(session.id).level >= 3)
+            jLabel24.setVisible(false);
+        
+        if(session.manager.users.get(session.id).level >= 2)
+        {
+            jLabel12.setVisible(false);
+            jLabel13.setVisible(false);
+            jLabel14.setVisible(false);
+            jButton2.setVisible(false);
+        }
+        
+        
+        jTabbedPane5.setTabPlacement(JTabbedPane.LEFT);
         
         jButton4.setFocusPainted(false);
         jButton4.setContentAreaFilled(false);
@@ -119,16 +177,80 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jCheckBox4.setBackground(Color.white);
         jCheckBox4.setOpaque(true);*/
         
-        jButton6.setFocusPainted(false);
-        jButton6.setContentAreaFilled(false);
-        
-        jButton7.setFocusPainted(false);
-        jButton7.setContentAreaFilled(false);
-        
         jLabel11.setVerticalAlignment(jLabel11.CENTER);
         jLabel10.setVerticalAlignment(jLabel10.CENTER);
         jLabel10.setVerticalAlignment(jLabel6.CENTER);
         jLabel10.setVerticalAlignment(jLabel23.CENTER);
+        
+        jPanel15.setLayout(new BorderLayout());
+        jPanel15.setBackground(Color.white);
+        dm_exam = new DefaultTableModel();
+        dm_exam.addColumn("ID");
+        dm_exam.addColumn("Exam");
+        dm_exam.addColumn("Date");
+        dm_exam.addColumn("Until");
+        dm_exam.addColumn("Questions");
+        dm_exam.addColumn("Points");
+        dm_exam.addColumn("Action");
+        
+        table_exam = new JTable(dm_exam);
+        table_exam.getColumn("Action").setCellRenderer(new ButtonRenderer());
+        table_exam.getColumn("Action").setCellEditor(new ButtonEditor(new JCheckBox()));
+        
+        table_exam.setDefaultEditor(Object.class, null);
+        table_exam.setBackground(Color.white);
+        table_exam.setRowHeight(50);
+        table_exam.setRowSelectionAllowed(false);
+        table_exam.setCellSelectionEnabled(false);
+        table_exam.setColumnSelectionAllowed(false);
+        table_exam.getColumn("ID").setPreferredWidth(5);
+        table_exam.getColumn("ID").setWidth(5);
+        table_exam.getColumn("ID").setResizable(false);
+        table_exam.getColumn("Exam").setResizable(false);
+        table_exam.getColumn("Action").setResizable(false);
+        table_exam.getColumn("Points").setResizable(false);
+        table_exam.getColumn("Questions").setResizable(false);
+        table_exam.getColumn("Date").setResizable(false);
+        table_exam.getColumn("Until").setResizable(false);
+        table_exam.getTableHeader().setReorderingAllowed(false);
+        
+        jPanel16.setLayout(new BorderLayout());
+        jPanel16.setBackground(Color.white);
+        
+        dm_results = new DefaultTableModel();
+        dm_results.addColumn("ID");
+        dm_results.addColumn("Exam");
+        dm_results.addColumn("Date");
+        dm_results.addColumn("Questions");
+        dm_results.addColumn("Achieved Points");
+        dm_results.addColumn("Max Points");
+        dm_results.addColumn("Note");
+        
+        table_results = new JTable(dm_results);
+                
+        table_results.setDefaultEditor(Object.class, null);
+        table_results.setBackground(Color.white);
+        table_results.setRowHeight(50);
+        table_results.setRowSelectionAllowed(false);
+        table_results.setCellSelectionEnabled(false);
+        table_results.setColumnSelectionAllowed(false);
+        table_results.getColumn("ID").setPreferredWidth(5);
+        table_results.getColumn("ID").setWidth(5);
+        table_results.getColumn("ID").setResizable(false);
+        table_results.getColumn("Exam").setResizable(false);
+        table_results.getColumn("Achieved Points").setResizable(false);
+        table_results.getColumn("Questions").setResizable(false);
+        table_results.getColumn("Date").setResizable(false);
+        table_results.getColumn("Note").setResizable(false);
+        table_results.getColumn("Max Points").setResizable(false);
+        table_results.getTableHeader().setReorderingAllowed(false);
+                   
+        JScrollPane scroll = new JScrollPane(table_results);
+        jPanel16.add(scroll, BorderLayout.CENTER);
+        jPanel16.setPreferredSize(new Dimension(1300, 220));
+                   
+        JScrollPane scroll2 = new JScrollPane(table_exam);
+        jPanel15.add(scroll2, BorderLayout.CENTER);
         
         loadRandomQuestion();
         
@@ -325,7 +447,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         
     }
     
-    Dimension getScaledDimension(Dimension imageSize, Dimension boundary) 
+    public Dimension getScaledDimension(Dimension imageSize, Dimension boundary) 
     {
         double widthRatio = boundary.getWidth() / imageSize.getWidth();
         double heightRatio = boundary.getHeight() / imageSize.getHeight();
@@ -376,13 +498,15 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel15 = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
         jPanel21 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
+        jTabbedPane4 = new javax.swing.JTabbedPane();
+        jPanel16 = new javax.swing.JPanel();
+        jPanel22 = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
+        jTabbedPane5 = new javax.swing.JTabbedPane();
         jPanel10 = new javax.swing.JPanel();
         jButton4 = new javax.swing.JButton();
         jTextField5 = new javax.swing.JTextField();
@@ -399,6 +523,8 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jLabel20 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
+        jPanel17 = new javax.swing.JPanel();
+        jLabel24 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -410,6 +536,11 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jTabbedPane1.setOpaque(true);
+        jTabbedPane1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jTabbedPane1StateChanged(evt);
+            }
+        });
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -433,6 +564,11 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jButton2.setText("APPLY");
         jButton2.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray));
         jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton2MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -497,7 +633,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jButton8.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
         jButton8.setForeground(java.awt.Color.black);
         jButton8.setText("Verify");
-        jButton8.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.black));
+        jButton8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jButton8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton8.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -708,52 +844,15 @@ public class OADTurkUserUI extends javax.swing.JFrame {
 
         jPanel15.setBackground(java.awt.Color.white);
 
-        jLabel8.setFont(new java.awt.Font("Ubuntu Light", 0, 18)); // NOI18N
-        jLabel8.setForeground(java.awt.Color.gray);
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("<html>Note: Exam will open in new window. DONOT close it until you are finished.<br>If you are not registered please do.</html>");
-
-        jButton6.setFont(new java.awt.Font("Ubuntu Light", 0, 14)); // NOI18N
-        jButton6.setForeground(java.awt.Color.gray);
-        jButton6.setText("REGISTER");
-        jButton6.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray));
-        jButton6.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton6.setOpaque(true);
-
-        jButton7.setFont(new java.awt.Font("Ubuntu Light", 0, 14)); // NOI18N
-        jButton7.setForeground(java.awt.Color.gray);
-        jButton7.setText("START");
-        jButton7.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray));
-        jButton7.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton7.setOpaque(true);
-        jButton7.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton7MouseClicked(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel15Layout = new javax.swing.GroupLayout(jPanel15);
         jPanel15.setLayout(jPanel15Layout);
         jPanel15Layout.setHorizontalGroup(
             jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 1302, Short.MAX_VALUE)
-            .addGroup(jPanel15Layout.createSequentialGroup()
-                .addGap(278, 278, 278)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(0, 1302, Short.MAX_VALUE)
         );
         jPanel15Layout.setVerticalGroup(
             jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel15Layout.createSequentialGroup()
-                .addGap(38, 38, 38)
-                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(495, Short.MAX_VALUE))
+            .addGap(0, 641, Short.MAX_VALUE)
         );
 
         jTabbedPane3.addTab("tab1", jPanel15);
@@ -794,15 +893,51 @@ public class OADTurkUserUI extends javax.swing.JFrame {
 
         jPanel5.setBackground(new java.awt.Color(255, 255, 255));
 
+        jPanel16.setBackground(java.awt.Color.white);
+
+        javax.swing.GroupLayout jPanel16Layout = new javax.swing.GroupLayout(jPanel16);
+        jPanel16.setLayout(jPanel16Layout);
+        jPanel16Layout.setHorizontalGroup(
+            jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1302, Short.MAX_VALUE)
+        );
+        jPanel16Layout.setVerticalGroup(
+            jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 641, Short.MAX_VALUE)
+        );
+
+        jTabbedPane4.addTab("tab1", jPanel16);
+
+        jLabel8.setFont(new java.awt.Font("Ubuntu Light", 0, 18)); // NOI18N
+        jLabel8.setForeground(java.awt.Color.gray);
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("<html>Unfortunately there is no Exam for this Application.<br>Check back again later</html>");
+
+        javax.swing.GroupLayout jPanel22Layout = new javax.swing.GroupLayout(jPanel22);
+        jPanel22.setLayout(jPanel22Layout);
+        jPanel22Layout.setHorizontalGroup(
+            jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 1302, Short.MAX_VALUE)
+        );
+        jPanel22Layout.setVerticalGroup(
+            jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel22Layout.createSequentialGroup()
+                .addGap(268, 268, 268)
+                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jTabbedPane4.addTab("tab2", jPanel22);
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1310, Short.MAX_VALUE)
+            .addComponent(jTabbedPane4)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 673, Short.MAX_VALUE)
+            .addComponent(jTabbedPane4)
         );
 
         jTabbedPane1.addTab("tab4", jPanel5);
@@ -813,6 +948,12 @@ public class OADTurkUserUI extends javax.swing.JFrame {
 
         jButton4.setText("Save");
         jButton4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(85, 85, 85)));
+        jButton4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jButton4MousePressed(evt);
+            }
+        });
 
         jTextField5.setBackground(java.awt.Color.white);
         jTextField5.setFont(new java.awt.Font("Ubuntu Light", 0, 24)); // NOI18N
@@ -903,7 +1044,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                             .addComponent(jTextField8)
                             .addComponent(jPasswordField4)
                             .addComponent(jPasswordField3, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(682, Short.MAX_VALUE))
+                .addContainerGap(698, Short.MAX_VALUE))
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -936,26 +1077,43 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                 .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jPasswordField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel22))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 174, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, Short.MAX_VALUE)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(21, 21, 21))
         );
+
+        jTabbedPane5.addTab("tab1", jPanel10);
+
+        jLabel24.setFont(new java.awt.Font("Ubuntu Light", 0, 18)); // NOI18N
+        jLabel24.setForeground(java.awt.Color.gray);
+        jLabel24.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel24.setText("<html>Unfortunately you have no rights to access this section.<br>Administrators only!</html>");
+
+        javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
+        jPanel17.setLayout(jPanel17Layout);
+        jPanel17Layout.setHorizontalGroup(
+            jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel24, javax.swing.GroupLayout.DEFAULT_SIZE, 1302, Short.MAX_VALUE)
+        );
+        jPanel17Layout.setVerticalGroup(
+            jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel17Layout.createSequentialGroup()
+                .addGap(268, 268, 268)
+                .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jTabbedPane5.addTab("tab2", jPanel17);
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jTabbedPane5)
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jTabbedPane5)
         );
 
         jTabbedPane1.addTab("tab5", jPanel9);
@@ -1030,16 +1188,9 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton7MouseClicked
-        // TODO add your handling code here:
-        OADTurkExamUI user = new OADTurkExamUI();
-        //close();
-        user.setVisible(true);
-    }//GEN-LAST:event_jButton7MouseClicked
-
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         // TODO add your handling code here:
-        OADTurkUI login = new OADTurkUI();
+        OADTurkUI login = new OADTurkUI(session);
         close();
         login.setVisible(true);
     }//GEN-LAST:event_jButton3MouseClicked
@@ -1114,6 +1265,228 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         
         
     }//GEN-LAST:event_jButton8ActionPerformed
+    
+    public void loadSettings()
+    {
+        jTextField5.setText(session.manager.users.get(session.id).first_name);
+        jTextField6.setText(session.manager.users.get(session.id).surname);
+        jTextField7.setText(session.manager.users.get(session.id).user);
+        jTextField8.setText(session.manager.users.get(session.id).mail);
+        jPasswordField3.setText("");
+    }
+    
+    public void loadResults()
+    {
+        selected_la = jTabbedPane4.getSelectedIndex();
+        LearningApp lapp = manager.la.get(jTabbedPane4.getSelectedIndex());
+                
+        if (dm_results.getRowCount() > 0) 
+        {
+            for (int i = dm_results.getRowCount() - 1; i > -1; i--) 
+            {
+                dm_results.removeRow(i);
+            }
+        }
+       
+        for(int i = 0; i < session.manager.users.get(session.id).finished_exams.size(); i++)
+        {
+            int id = session.manager.users.get(session.id).finished_exams.get(i).exam_id;
+            int exlid = session.manager.users.get(session.id).finished_exams.get(i).laid;
+            
+            if(exlid == selected_la)
+            {
+                Exam ex = lapp.exam.get(id);
+                ExamResults exre = session.manager.users.get(session.id).finished_exams.get(i);
+                DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+                Calendar cal = ex.date;
+
+                float points = exre.points;
+                float max_points = ex.points_per_question * ex.num_of_questions;
+
+                float percentage = points/max_points * 100;
+
+                String note = "";
+
+                if(percentage < 50)
+                    note = "Not Sufficient (5)";
+                else if(percentage >= 50 && percentage < 62)
+                    note = "Inufficient (4)";
+                else if(percentage >= 62 && percentage < 75)
+                    note = "Good (3)";
+                else if(percentage >= 75 && percentage < 87)
+                    note = "Very Good (2)";
+                else if(percentage >= 87)
+                    note = "Excellent (1)";                       
+
+
+                Object[] row = {id, ex.name, dateFormat.format(cal.getTime()), ex.num_of_questions, exre.points, ex.points_per_question * ex.num_of_questions, note};
+                dm_results.addRow(row);
+            }
+           
+            
+        }
+        
+        JButton butt = new JButton();
+        butt.setFocusPainted(false);
+        butt.setContentAreaFilled(false);
+        butt.setFont(new java.awt.Font("Ubuntu Light", 0, 14)); // NOI18N
+        butt.setForeground(java.awt.Color.black);
+        butt.setText("EXPORT RESULTS");
+        butt.setPreferredSize(new Dimension(300, 50));
+        butt.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.black));
+        butt.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        
+        jPanel16.add(butt, BorderLayout.AFTER_LAST_LINE);
+    }
+    
+              
+    public void loadExams()
+    {
+        selected_la = jTabbedPane3.getSelectedIndex();
+        LearningApp lapp = manager.la.get(jTabbedPane3.getSelectedIndex());
+
+        if (dm_exam.getRowCount() > 0) 
+        {
+            for (int i = dm_exam.getRowCount() - 1; i > -1; i--) 
+            {
+                dm_exam.removeRow(i);
+            }
+        }
+       
+        for(HashMap.Entry<Integer, Exam> entry : lapp.exam.entrySet())
+        {
+            Exam ex = entry.getValue();
+            int id = entry.getKey();
+            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+            Calendar cal = ex.date;
+            Calendar until = ex.until;
+            Calendar current = Calendar.getInstance();
+            current.setTime(new Date());
+
+            if(current.before(until) && !session.manager.examAlreadyFinished(session.id, selected_la, id))
+            {
+                String text = "Register";
+
+                for(int i = 0; i < session.manager.users.get(session.id).registered_exams.size(); i++)
+                {
+                    RegisteredExam rex = session.manager.users.get(session.id).registered_exams.get(i);
+                    if(rex.laid == selected_la && rex.exid == id && current.after(cal))
+                    {
+                        text = "Start";
+                        break;
+                    }
+                    else if(rex.laid == selected_la && rex.exid == id)
+                    {
+                        text = "Unregister";
+                        break;
+                    }
+                }
+                    
+
+                Object[] row = {id, ex.name, dateFormat.format(cal.getTime()), dateFormat.format(until.getTime()) , ex.num_of_questions, ex.points_per_question * ex.num_of_questions, text};
+                dm_exam.addRow(row);
+            }  
+        }
+       
+        
+    }
+    
+    
+    private void jTabbedPane1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane1StateChanged
+       
+        if(jTabbedPane1.getSelectedIndex() == 2)
+        {
+            loadExams();
+        }
+        else if(jTabbedPane1.getSelectedIndex() == 3)
+        {
+            loadResults();
+        }
+        else if(jTabbedPane1.getSelectedIndex() == 4)
+        {
+            loadSettings();
+        }
+    }//GEN-LAST:event_jTabbedPane1StateChanged
+
+    private void jButton4MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MousePressed
+        // TODO add your handling code here:
+        char[] text1 = jPasswordField3.getPassword();
+        String text = new String(text1);
+        
+        if(text.equals(session.manager.users.get(session.id).password))
+        {
+            char[] text2 = jPasswordField4.getPassword();
+            String text3 = new String(text2);
+            
+            if(text.equals(text3))
+            {
+                JOptionPane.showMessageDialog(rootPane, "Old and new password can not be the same!", "Wrong new password", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if(text3.length() < 4 && text3.length() != 0) 
+            {
+                JOptionPane.showMessageDialog(rootPane, "Password must be at least 5 chracters long!", "Wrong new password", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            String fn = jTextField5.getText();
+            String sn = jTextField6.getText();
+            String u = jTextField7.getText();
+            String m = jTextField8.getText();
+            String p;
+            
+            if(text3.length() != 0)
+                p = text3;
+            else
+                p = text;
+            
+            String n = fn + " " + sn;
+            
+            session.manager.updateUserSettings(session.id, u, n, fn, sn, m, p, session.id, session.manager.users.get(session.id).level);
+            
+            jLabel1.setText(session.manager.users.get(session.id).name + " (" + session.getLevelText() + ")");
+            
+            JOptionPane.showMessageDialog(rootPane, "You successfuly saved your data!");
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(rootPane, "You entered the wrong password!", "Wrong password", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        jPasswordField3.setText("");
+        jPasswordField4.setText("");
+    }//GEN-LAST:event_jButton4MousePressed
+
+    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+        
+        if(manager.creator_applications.containsKey(session.id))
+        {
+            int answer = JOptionPane.showConfirmDialog(rootPane, "You already applied to be a creator\nDo you want to withdraw your application?\n\n", "Creator application", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                
+            if(answer == 0)
+            {
+                manager.deleteCreatorApplication(session.id);
+                JOptionPane.showMessageDialog(rootPane, "You successfuly withdrawed your Creator application!");
+            }
+        }
+        else
+        {
+          String answer = JOptionPane.showInputDialog(rootPane, "Hi, \nwe are glad that you decided to apply to be a creator.\nWe want to know why you would like to become one.\n\nPlease describe your application reasons:", "Creator application", JOptionPane.QUESTION_MESSAGE);  
+          
+          
+          if(answer != null)
+          {
+            manager.addCreatorApplication(session.id, answer);
+            JOptionPane.showMessageDialog(rootPane, "You successfuly applied to be a creator!"); 
+          }
+          else
+          {
+            JOptionPane.showMessageDialog(rootPane, "You canceled your application!"); 
+          }
+        }
+        
+    }//GEN-LAST:event_jButton2MouseClicked
 
     /**
      * @param args the command line arguments
@@ -1158,8 +1531,6 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
@@ -1181,6 +1552,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1195,8 +1567,11 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel21;
+    private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -1209,6 +1584,8 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
+    private javax.swing.JTabbedPane jTabbedPane4;
+    private javax.swing.JTabbedPane jTabbedPane5;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
@@ -1216,10 +1593,180 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     
-        private void close()
+    private void close()
     {
         WindowEvent winClosing = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(winClosing);
     }
     
+}
+
+class ButtonRenderer extends JButton implements TableCellRenderer {
+
+  public ButtonRenderer() {
+    setOpaque(true);
+  }
+
+  public Component getTableCellRendererComponent(JTable table, Object value,
+      boolean isSelected, boolean hasFocus, int row, int column) {
+    if (isSelected) {
+      setForeground(table.getSelectionForeground());
+      setBackground(table.getSelectionBackground());
+    } else {
+      setForeground(table.getForeground());
+      setBackground(UIManager.getColor("Button.background"));
+    }
+    setText((value == null) ? "" : value.toString());
+    return this;
+  }
+}
+
+/**
+ * @version 1.0 11/09/98
+ */
+
+class ButtonEditor extends DefaultCellEditor {
+  protected JButton button;
+
+  private String label;
+
+  private boolean isPushed;
+  
+  private int exam_id;
+
+  public ButtonEditor(JCheckBox checkBox) {
+    super(checkBox);
+    button = new JButton();
+    button.setOpaque(true);
+    
+    
+    button.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        fireEditingStopped();
+      }
+    });
+  }
+
+  public Component getTableCellEditorComponent(JTable table, Object value,
+      boolean isSelected, int row, int column) {
+     
+    label = (value == null) ? "" : value.toString();
+    button.setText(label);
+    isPushed = true;
+    exam_id = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+    return button;
+  }
+
+  @Override
+  public Object getCellEditorValue() {
+    
+    if (isPushed) 
+    {
+        LearningApp lapp = OADTurkUserUI.manager.la.get(OADTurkUserUI.selected_la);
+        Exam exam = lapp.exam.get(exam_id);
+        Calendar start = exam.date;
+        Calendar end = exam.until;
+        Calendar current = Calendar.getInstance();
+        current.setTime(new Date());
+        
+        if(button.getText().equals("Register"))
+        {
+            if(current.before(start))
+            {
+                int answer = JOptionPane.showConfirmDialog(button, "Are you sure that you want to register for an exam?\n", "Exam registration", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                
+                if(answer == 0)
+                {
+                    JOptionPane.showMessageDialog(button, "You successfuly registered for exam!\n\nIn order to attend the exam save your exam entry code: " + exam.code);
+                    OADTurkUserUI.session.manager.registerForExam(OADTurkUserUI.session.id, OADTurkUserUI.selected_la, exam_id);
+                    button.setText("Unregister");
+                    label = "Unregister";
+                    return new String(label);
+                }
+            
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(button, "You are not able to register for this exam!\n\nThis Exam has already started!", "Exam registration", JOptionPane.ERROR_MESSAGE);
+            }
+        
+        }
+        
+        if(button.getText().equals("Unregister"))
+        {
+            if(current.before(start))
+            {
+                int answer = JOptionPane.showConfirmDialog(button, "Are you sure that you want to unregister from an exam?\n", "Exam registration", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                
+                if(answer == 0)
+                {
+                    JOptionPane.showMessageDialog(button, "You successfuly unregistered from exam!");
+                    OADTurkUserUI.session.manager.deleteRegisteredExam(OADTurkUserUI.session.id, OADTurkUserUI.selected_la, exam_id);
+                    button.setText("Register");
+                    label = "Register";
+                    return new String(label);
+                }
+            
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(button, "You are not able to unregister from this exam!\n\nThis Exam has already started!", "Exam registration", JOptionPane.ERROR_MESSAGE);
+            }
+        
+        }
+        
+        if(button.getText().equals("Start"))
+        {
+            if(current.before(start))
+            {
+                JOptionPane.showMessageDialog(button, "You can not attend the exam!\n\nThis Exam has not started!", "Exam start", JOptionPane.ERROR_MESSAGE);
+            }
+            else if(current.after(start) && current.before(end))
+            {
+      
+                String code = JOptionPane.showInputDialog(button, "Pleas enter your exam code in order to attend the exam: ");
+                
+                try
+                {
+                    int num = Integer.parseInt(code);
+                    
+                    if(num == exam.code)
+                    {
+                        OADTurkExamUI user = new OADTurkExamUI(OADTurkUserUI.session, OADTurkUserUI.selected_la, exam_id);
+                        user.setVisible(true);
+                    }
+                    else
+                    {
+                        JOptionPane.showMessageDialog(button, "You can not attend the exam!\n\nYou entered the wrong exam code!", "Exam start", JOptionPane.ERROR_MESSAGE);
+                    }
+                } 
+                catch (NumberFormatException e) 
+                {
+                    JOptionPane.showMessageDialog(button, "You can not attend the exam!\n\nYou entered the wrong exam code!", "Exam start", JOptionPane.ERROR_MESSAGE);
+                }
+                
+            }
+            else if(current.after(end))
+            {
+                JOptionPane.showMessageDialog(button, "You are not able to attend this exam!\n\nThis Exam is already finished!", "Exam start", JOptionPane.ERROR_MESSAGE);
+            }
+        
+        }
+        
+    }
+    isPushed = false;
+    
+    return new String(label);
+  }
+
+  @Override
+  public boolean stopCellEditing() {
+    isPushed = false;
+    return super.stopCellEditing();
+  }
+
+  @Override
+  protected void fireEditingStopped() {
+    super.fireEditingStopped();
+  }
 }
