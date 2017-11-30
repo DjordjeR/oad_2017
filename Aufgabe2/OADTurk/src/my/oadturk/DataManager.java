@@ -29,6 +29,7 @@ public class DataManager
         registerUser("1", "User Userman", "User", "Userman", "user@oadturk.at", "1", 1);
         registerUser("creator", "Creator Creatori", "Creator", "Creatori", "creator@oadturk.at", "creator", 2);
         registerUser("admin", "Admin Administratore", "Admin", "Administratore", "admin@oadturk.at", "admin", 3);
+        setCreator(1, 0);
         
         users.get(0).finished_exams.add(new ExamResults(0, 2, 3));
         users.get(0).registered_exams.add(new RegisteredExam(0, 0));
@@ -82,7 +83,7 @@ public class DataManager
         boolean a4c = false;  
         
         insertLU(getLAId("OAD"), q, d, dt, as1, as1t, as2, as2t, as3, as3t, as4, 
-                as4t, 3, 1, 0, a1c, a2c, a3c, a4c);
+                as4t, 1, 1, 0, a1c, a2c, a3c, a4c);
         
         q = "Which of the following texts describes the UML model?";
         d = "images/desc2.png";
@@ -106,7 +107,7 @@ public class DataManager
         a4c = false;  
         
         insertLU(getLAId("OAD"), q, d, dt, as1, as1t, as2, as2t, as3, as3t, as4, 
-                as4t, 3, 1, 0, a1c, a2c, a3c, a4c);
+                as4t, 1, 1, 0, a1c, a2c, a3c, a4c);
         
         
         q = "Which of the following UML models reflects the domain description?";
@@ -130,7 +131,7 @@ public class DataManager
         a4c = false;  
         
         insertLU(getLAId("OAD"), q, d, dt, as1, as1t, as2, as2t, as3, as3t, as4, 
-                as4t, 3, 1, 0, a1c, a2c, a3c, a4c);
+                as4t, 1, 1, 0, a1c, a2c, a3c, a4c);
         
         
         q = "What is a „conceptual class diagram“?";
@@ -154,7 +155,7 @@ public class DataManager
         a4c = false;  
         
         insertLU(getLAId("OAD"), q, d, dt, as1, as1t, as2, as2t, as3, as3t, as4, 
-                as4t, 3, 1, 1, a1c, a2c, a3c, a4c);
+                as4t, 2, 1, 1, a1c, a2c, a3c, a4c);
         
         // TODO: Load from database
         
@@ -267,16 +268,13 @@ public class DataManager
         return true;
     }
     
-    public boolean editLU(int laid, int luid, String q, String d, int dt,  
-                int as1t, String as2, int as2t, String as3, int as3t, 
-                String as1, String as4, int as4t, int creator, int app, int cat,
-                boolean a1c, boolean a2c, boolean a3c, boolean a4c)
+    public boolean editLU(int laid, int luid, int app, int cat)
     {
         LearningApp lapp = la.get(laid);
         LearningUnit lunit = lapp.lu.get(luid);
         
-        lunit.editLearningUnit(q, d, dt, as1, as1t, as2, as2t, 
-                as3, as3t, as4, as4t, creator, app, cat, a1c, a2c, a3c, a4c);
+        lunit.cat_id = cat;
+        lunit.approved = app;
         
         // TODO: Update in database
         
@@ -288,20 +286,21 @@ public class DataManager
         LearningApp lapp = la.get(laid);
         lapp.deleteLearningUnit(luid);
         
+        removeFromExams(laid, luid);
+        
         // TODO: Delete from database
         
         return true;
     }
     
-    public boolean insertCat(int laid, String name)
+    public int insertCat(int laid, String name)
     {
         LearningApp lapp = la.get(laid);
-        lapp.addCategory(name);
         
         
         // TODO: Insert into database
         
-        return true;
+        return lapp.addCategory(name);
     }
     
     public boolean deleteCat(int laid, int id)
@@ -401,7 +400,7 @@ public class DataManager
         user.id = i;
         user.level = lvl;
         
-        // Update in database!  
+        // TODO: Update in database!  
         
         return true;
     }
@@ -411,7 +410,7 @@ public class DataManager
         UserInfo newUser = new UserInfo(u, n, fn, sn, m, pw, user_id, lvl);
         users.put(user_id++, newUser);
         
-        // Insert in database
+        // TODO: Insert in database
         
         return true;
     }
@@ -420,7 +419,7 @@ public class DataManager
     {
         users.remove(uid);
         
-        // Delete from database
+        // TODO: Delete from database
         
         return true;
     }
@@ -429,7 +428,7 @@ public class DataManager
     {
         users.get(uid).registered_exams.add(new RegisteredExam(laid, exid));
         
-        // Insert in database
+        // TODO: Insert in database
         
         return true;
     }
@@ -438,7 +437,7 @@ public class DataManager
     {
         users.get(uid).finished_exams.add(new ExamResults(l, e, points));
         
-        // Insert in database
+        // TODO: Insert in database
                 
         return true;
     }
@@ -526,4 +525,75 @@ public class DataManager
         return false;
     }
 
+    
+    public boolean setCreator(int uid, int laid)
+    {
+        users.get(uid).creator_la = laid;
+        
+        
+        // TODO: Save in database
+        
+        return true;
+    }
+    
+    
+    public boolean deleteCategory(int laid, int catid)
+    {
+        LearningApp lapp = la.get(laid);
+        
+        for(HashMap.Entry<Integer, LearningUnit> entry : lapp.lu.entrySet())
+        {
+            if(entry.getValue().cat_id == catid)
+               entry.getValue().cat_id = -1; 
+        }
+        
+        lapp.categories.remove(catid);
+        
+        // TODO: Delete from database
+        
+        return true;
+    }
+    
+    public boolean saveCategory(int laid, int catid, String cat)
+    {
+        LearningApp lapp = la.get(laid);
+        lapp.categories.replace(catid, cat);
+        
+        // TODO: Save in database
+        
+        return true;
+    }
+    
+    public boolean categoryExists(int laid, String name)
+    {
+        LearningApp lapp = la.get(laid);
+        
+        if(lapp.categories.containsValue(name))
+            return true;
+        
+        return false;
+    }
+    
+    public int getCategoryID(int laid, String name)
+    {
+        int id = -1;
+        LearningApp lapp = la.get(laid);
+        
+        for(HashMap.Entry<Integer, String> entry : lapp.categories.entrySet())
+        {
+            if(entry.getValue().equals(name))
+                return entry.getKey();
+        }
+        
+        return id;
+    }
+    
+    public boolean removeFromExams(int laid, int luid)
+    {
+        
+       // TODO: Write function
+        
+        
+        return true;
+    }
 }

@@ -22,7 +22,6 @@ public class UserInfo {
     public String password;
     public int id;
     public int level;
-    public int creator_la = -1;
     
     public ArrayList<RegisteredExam> registered_exams = new ArrayList<>();
     public ArrayList<ExamResults> finished_exams = new ArrayList<>();

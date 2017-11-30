@@ -43,11 +43,13 @@ import java.util.Date;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 
@@ -131,21 +133,13 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         if(session.manager.users.get(session.id).level >= 3)
             jLabel24.setVisible(false);
         
-        if(session.manager.users.get(session.id).level >= 2)
-        {
-            jLabel12.setVisible(false);
-            jLabel13.setVisible(false);
-            jLabel14.setVisible(false);
-            jButton2.setVisible(false);
-        }
-        
+             
         
         jTabbedPane5.setTabPlacement(JTabbedPane.LEFT);
         
         jButton4.setFocusPainted(false);
         jButton4.setContentAreaFilled(false);
-        jButton2.setFocusPainted(false);
-        jButton2.setContentAreaFilled(false);
+        
         jButton3.setFocusPainted(false);
         jButton3.setContentAreaFilled(false);
         jButton5.setFocusPainted(false);
@@ -468,10 +462,6 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel6 = new javax.swing.JPanel();
@@ -544,60 +534,15 @@ public class OADTurkUserUI extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel12.setFont(new java.awt.Font("Ubuntu Light", 0, 24)); // NOI18N
-        jLabel12.setForeground(java.awt.Color.gray);
-        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel12.setText("Unfortunately you are not a CREATOR.");
-
-        jLabel13.setFont(new java.awt.Font("Ubuntu Light", 0, 20)); // NOI18N
-        jLabel13.setForeground(java.awt.Color.gray);
-        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel13.setText("To become one,  plase apply and wait for our Admins to evaluate your request.");
-
-        jLabel14.setFont(new java.awt.Font("Ubuntu Light", 0, 20)); // NOI18N
-        jLabel14.setForeground(java.awt.Color.gray);
-        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel14.setText("You  might be asked to provide some additional informations.");
-
-        jButton2.setFont(new java.awt.Font("Ubuntu Light", 0, 14)); // NOI18N
-        jButton2.setForeground(java.awt.Color.gray);
-        jButton2.setText("APPLY");
-        jButton2.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray));
-        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, 1286, Short.MAX_VALUE)
-                    .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(595, 595, 595)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(0, 1310, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(155, 155, 155)
-                .addComponent(jLabel12)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel13)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel14)
-                .addGap(32, 32, 32)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(348, Short.MAX_VALUE))
+            .addGap(0, 678, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("tab1", jPanel2);
@@ -1188,6 +1133,470 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public static DefaultTableModel modelCAT;
+    public static DefaultTableModel modelLUA;
+    public void loadCreatorPanel()
+    {
+        jPanel2.removeAll();
+        if(manager.users.get(session.id).level == 2)
+        {
+            
+            JLabel labelLUA = new javax.swing.JLabel();
+            
+            labelLUA.setText("Learning Units:");
+            
+            JTable tableLUA = new javax.swing.JTable();
+            
+                       
+            
+            modelLUA = new javax.swing.table.DefaultTableModel(
+                new Object [][] {
+
+                },
+                new String [] {
+                    "ID", "Question", "Created by", "Approved", "Category", "Save", "Delete"
+                }
+            ) {
+                Class[] types = new Class [] {
+                    java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+                };
+
+                public Class getColumnClass(int columnIndex) {
+                    return types [columnIndex];
+                }
+                
+                @Override
+                public boolean isCellEditable(int row, int column)
+                {
+                    if(column == 0)
+                        return false;
+                    
+                    if(column == 1)
+                        return false;
+                    
+                    if(column == 2)
+                        return false;
+                    
+                    return true;
+                }
+            };
+            
+            tableLUA.setModel(modelLUA);
+            
+            tableLUA.getColumn("Save").setCellRenderer(new ButtonRenderer());
+            tableLUA.getColumn("Save").setCellEditor(new CreatorButtonEditor(new JCheckBox()));
+            
+            tableLUA.getColumn("Delete").setCellRenderer(new ButtonRenderer());
+            tableLUA.getColumn("Delete").setCellEditor(new CreatorButtonEditor(new JCheckBox()));
+            
+            //tableLUA.setDefaultEditor(Object.class, null);
+            tableLUA.setRowHeight(50);
+            tableLUA.setRowSelectionAllowed(false);
+            tableLUA.setCellSelectionEnabled(false);
+            tableLUA.setColumnSelectionAllowed(false);
+            tableLUA.getColumn("ID").setResizable(false);
+            tableLUA.getColumn("Question").setResizable(false);
+            tableLUA.getColumn("Created by").setResizable(false);
+            tableLUA.getColumn("Approved").setResizable(false);
+            tableLUA.getColumn("Category").setResizable(false);
+            tableLUA.getColumn("Save").setResizable(false);
+            tableLUA.getColumn("Delete").setResizable(false);
+            tableLUA.getTableHeader().setReorderingAllowed(false);
+            
+            tableLUA.getColumnModel().getColumn(0).setMaxWidth(45);
+            tableLUA.getColumnModel().getColumn(1).setPreferredWidth(550);
+            tableLUA.getColumnModel().getColumn(1).setMaxWidth(550);
+            tableLUA.getColumnModel().getColumn(2).setPreferredWidth(130);
+            tableLUA.getColumnModel().getColumn(2).setMaxWidth(130);
+            tableLUA.getColumnModel().getColumn(3).setPreferredWidth(80);
+            tableLUA.getColumnModel().getColumn(3).setMaxWidth(80);
+            tableLUA.getColumnModel().getColumn(4).setPreferredWidth(140);
+            tableLUA.getColumnModel().getColumn(4).setMaxWidth(140);
+            tableLUA.getColumnModel().getColumn(5).setPreferredWidth(140);
+            tableLUA.getColumnModel().getColumn(5).setMaxWidth(140);
+            tableLUA.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+            
+            
+            
+            LearningApp lapp = manager.la.get(manager.users.get(session.id).creator_la);
+            
+            if (modelLUA.getRowCount() > 0) 
+            {
+                for (int i = modelLUA.getRowCount() - 1; i > -1; i--) 
+                {
+                    modelLUA.removeRow(i);
+                }
+            }
+            
+            
+            for(HashMap.Entry<Integer, LearningUnit> entry : lapp.lu.entrySet())
+            {
+                int id = entry.getKey();
+                LearningUnit lu = entry.getValue();
+                
+                String creat = "";
+                String catname = "";
+                           
+                if(lu.cat_id != -1)
+                    catname = lapp.categories.get(lu.cat_id);
+                else
+                    catname = "Uncategorized";
+                
+                creat = session.manager.users.get(lu.created_by).user;
+                
+                Object[] row = {id, lu.question, creat, lu.approved, catname, "Save", "Delete"};
+                modelLUA.addRow(row);
+            }
+            
+            
+            JScrollPane scrollLUA = new javax.swing.JScrollPane();
+            
+            scrollLUA.setViewportView(tableLUA);
+                      
+            JLabel labelEdit = new javax.swing.JLabel();
+            JLabel labelExam = new javax.swing.JLabel();
+            JLabel labelCreate = new javax.swing.JLabel();
+            
+            JTable tableCAT = new javax.swing.JTable();
+            modelCAT = new javax.swing.table.DefaultTableModel(
+                new Object [][] { },
+                new String [] {
+                    "ID", "Category", "Save", "Delete"
+                }
+            ) {
+                Class[] types = new Class [] {
+                    java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+                };
+
+                public Class getColumnClass(int columnIndex) {
+                    return types [columnIndex];
+                }
+                
+                @Override
+                public boolean isCellEditable(int row, int column)
+                {
+                    if(column == 0)
+                        return false;
+                    
+                    return true;
+                }
+            };
+            
+            labelEdit.setText("Edit Categories:");
+
+            tableCAT.setModel(modelCAT);
+            
+            tableCAT.getColumn("Save").setCellRenderer(new ButtonRenderer());
+            tableCAT.getColumn("Save").setCellEditor(new CategoryButtonEditor(new JCheckBox()));
+            
+            tableCAT.getColumn("Delete").setCellRenderer(new ButtonRenderer());
+            tableCAT.getColumn("Delete").setCellEditor(new CategoryButtonEditor(new JCheckBox()));
+            
+            tableCAT.setRowHeight(50);
+            tableCAT.setRowSelectionAllowed(false);
+            tableCAT.setCellSelectionEnabled(false);
+            tableCAT.setColumnSelectionAllowed(false);
+            tableCAT.getColumn("ID").setResizable(false);
+            tableCAT.getColumn("Category").setResizable(false);
+            tableCAT.getColumn("Save").setResizable(false);
+            tableCAT.getColumn("Delete").setResizable(false);
+            tableCAT.getTableHeader().setReorderingAllowed(false);
+            
+            tableCAT.getColumnModel().getColumn(0).setMaxWidth(45);
+            tableCAT.getColumnModel().getColumn(1).setPreferredWidth(200);
+            tableCAT.getColumnModel().getColumn(1).setMaxWidth(200);
+            tableCAT.getColumnModel().getColumn(2).setPreferredWidth(130);
+            tableCAT.getColumnModel().getColumn(2).setMaxWidth(130);
+            tableCAT.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+            
+            if (modelCAT.getRowCount() > 0) 
+            {
+                for (int i = modelCAT.getRowCount() - 1; i > -1; i--) 
+                {
+                    modelCAT.removeRow(i);
+                }
+            }
+            
+            for(HashMap.Entry<Integer, String> entry : lapp.categories.entrySet())
+            {
+                Object[] row = {entry.getKey(), entry.getValue(), "Save", "Delete"};
+                modelCAT.addRow(row);
+            }
+            
+            
+            
+            JScrollPane scrollCAT = new javax.swing.JScrollPane();
+            
+            scrollCAT.setViewportView(tableCAT);
+
+            labelExam.setText("Exams:");
+            
+            JButton editEX = new javax.swing.JButton();
+            JButton deleteEX = new javax.swing.JButton();
+            JButton newEX = new javax.swing.JButton();
+            
+            
+            JButton addCAT = new javax.swing.JButton();
+            
+            
+            editEX.setFocusPainted(false);
+            editEX.setContentAreaFilled(false);
+            
+            deleteEX.setFocusPainted(false);
+            deleteEX.setContentAreaFilled(false);
+            
+            newEX.setFocusPainted(false);
+            newEX.setContentAreaFilled(false);
+            
+            addCAT.setFocusPainted(false);
+            addCAT.setContentAreaFilled(false);
+
+            editEX.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
+            editEX.setForeground(java.awt.Color.darkGray);
+            editEX.setText("Edit");
+            editEX.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
+            editEX.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            
+            
+
+            deleteEX.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
+            deleteEX.setForeground(java.awt.Color.darkGray);
+            deleteEX.setText("Delete");
+            deleteEX.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
+            deleteEX.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+            newEX.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
+            newEX.setForeground(java.awt.Color.darkGray);
+            newEX.setText("New Exam");
+            newEX.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
+            newEX.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            
+            
+            
+
+            labelCreate.setText("New Category:");
+
+            addCAT.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
+            addCAT.setForeground(java.awt.Color.darkGray);
+            addCAT.setText("Add Category");
+            addCAT.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
+            addCAT.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            
+            JComboBox<String> comboEX = new javax.swing.JComboBox<String>();
+            
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            
+            for(HashMap.Entry<Integer, Exam> entry : lapp.exam.entrySet())
+            {
+                if(cal.before(entry.getValue().date))
+                {
+                   comboEX.addItem(entry.getKey() + " - " + entry.getValue().name); 
+                }
+            }
+            
+            deleteEX.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mousePressed(java.awt.event.MouseEvent evt) {
+                    
+                    
+                    if(comboEX.getItemCount() == 0)
+                    {
+                        JOptionPane.showMessageDialog(rootPane, "There are no exams that can be deleted!", "Exam deletion", JOptionPane.ERROR_MESSAGE);
+                    }
+                    else
+                    {
+                        String[] split = comboEX.getSelectedItem().toString().split(" ");
+                        int exid = Integer.parseInt(split[0]);
+                        int answer = JOptionPane.showConfirmDialog(rootPane, "Are you sure that you want to delete this exam?\n", "Exam deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                        if(answer == 0)
+                        {
+                           comboEX.removeItem(comboEX.getSelectedItem());
+                           manager.deleteExam(lapp.id, exid);
+                           JOptionPane.showMessageDialog(rootPane, "You successfuly deleted an exam!");
+                        }
+                    }
+                }
+            });
+            
+            editEX.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mousePressed(java.awt.event.MouseEvent evt) {
+                   System.out.println("TODO: Implement exam editing!");
+                }
+            });
+            
+            
+            newEX.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mousePressed(java.awt.event.MouseEvent evt) {
+                   System.out.println("TODO: Implement exam creating!");
+                }
+            });
+            
+            JTextField textCAT = new javax.swing.JTextField();
+            
+            addCAT.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mousePressed(java.awt.event.MouseEvent evt) {
+                    String catname = textCAT.getText();
+                    
+                    if(catname.length() < 3)
+                    {
+                        JOptionPane.showMessageDialog(rootPane, "Category name must be at least 3 characters long!", "Category creation", JOptionPane.ERROR_MESSAGE);
+                    }
+                    else if(manager.categoryExists(lapp.id, catname))
+                    {
+                        JOptionPane.showMessageDialog(rootPane, "Category with that name already exists!", "Category creation", JOptionPane.ERROR_MESSAGE);
+                    }
+                    else
+                    {
+                        int answer = JOptionPane.showConfirmDialog(rootPane, "Are you sure that you want to create this category?\n", "Category creation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                        if(answer == 0)
+                        {
+                           Object[] row = {manager.insertCat(lapp.id, catname) ,catname, "Save", "Delete"};
+                           modelCAT.addRow(row);
+                           JOptionPane.showMessageDialog(rootPane, "You successfuly created a category!");
+                        }
+                        else
+                            JOptionPane.showMessageDialog(rootPane, "You refused to create a category!");
+                    }
+                }
+            });
+            
+            javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+            jPanel2.setLayout(jPanel2Layout);
+            jPanel2Layout.setHorizontalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addContainerGap(53, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(labelEdit)
+                                .addComponent(scrollCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 511, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                    .addComponent(labelCreate)
+                                    .addGap(530, 530, 530))
+                                .addComponent(labelExam)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                                        .addComponent(editEX, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(42, 42, 42)
+                                        .addComponent(deleteEX, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(newEX, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(comboEX, javax.swing.GroupLayout.PREFERRED_SIZE, 556, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                            .addComponent(textCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(addCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(labelLUA)
+                                .addComponent(scrollLUA, javax.swing.GroupLayout.PREFERRED_SIZE, 1200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(0, 57, Short.MAX_VALUE)))
+                    .addContainerGap())
+            );
+            jPanel2Layout.setVerticalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(labelLUA)
+                    .addGap(18, 18, 18)
+                    .addComponent(scrollLUA, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(18, 18, 18)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(labelEdit)
+                        .addComponent(labelCreate))
+                    .addGap(18, 18, 18)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(textCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(addCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(26, 26, 26)
+                            .addComponent(labelExam)
+                            .addGap(18, 18, 18)
+                            .addComponent(comboEX, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(editEX, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(deleteEX, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(newEX, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(scrollCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap(17, Short.MAX_VALUE))
+            );
+            
+        }
+        else if(session.manager.users.get(session.id).level == 1)
+        {
+            JLabel jLabel112 = new javax.swing.JLabel();
+            JLabel jLabel113 = new javax.swing.JLabel();
+            JLabel jLabel114 = new javax.swing.JLabel();
+            JButton jButton122 = new javax.swing.JButton();
+            
+            jLabel112.setFont(new java.awt.Font("Ubuntu Light", 0, 24)); // NOI18N
+            jLabel112.setForeground(java.awt.Color.gray);
+            jLabel112.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            jLabel112.setText("Unfortunately you are not a CREATOR.");
+
+            jLabel113.setFont(new java.awt.Font("Ubuntu Light", 0, 20)); // NOI18N
+            jLabel113.setForeground(java.awt.Color.gray);
+            jLabel113.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            jLabel113.setText("To become one,  plase apply and wait for our Admins to evaluate your request.");
+
+            jLabel114.setFont(new java.awt.Font("Ubuntu Light", 0, 20)); // NOI18N
+            jLabel114.setForeground(java.awt.Color.gray);
+            jLabel114.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            jLabel114.setText("You  might be asked to provide some additional informations.");
+
+            jButton122.setFont(new java.awt.Font("Ubuntu Light", 0, 14)); // NOI18N
+            jButton122.setForeground(java.awt.Color.gray);
+            jButton122.setText("APPLY");
+            jButton122.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray));
+            jButton122.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            jButton122.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    jButton2MouseClicked(evt);
+                }
+            });
+            
+            jButton122.setFocusPainted(false);
+            jButton122.setContentAreaFilled(false);
+        
+            javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+            jPanel2.setLayout(jPanel2Layout);
+            jPanel2Layout.setHorizontalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel113, javax.swing.GroupLayout.DEFAULT_SIZE, 1286, Short.MAX_VALUE)
+                        .addComponent(jLabel114, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel112, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addContainerGap())
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGap(595, 595, 595)
+                    .addComponent(jButton122, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            );
+            jPanel2Layout.setVerticalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGap(155, 155, 155)
+                    .addComponent(jLabel112)
+                    .addGap(18, 18, 18)
+                    .addComponent(jLabel113)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel114)
+                    .addGap(32, 32, 32)
+                    .addComponent(jButton122, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(348, Short.MAX_VALUE))
+            );
+        }
+    }
+    
+    
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         // TODO add your handling code here:
         OADTurkUI login = new OADTurkUI(session);
@@ -1394,7 +1803,15 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     
     private void jTabbedPane1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane1StateChanged
        
-        if(jTabbedPane1.getSelectedIndex() == 2)
+        if(jTabbedPane1.getSelectedIndex() == 0)
+        {
+            loadCreatorPanel();
+        }
+        else if(jTabbedPane1.getSelectedIndex() == 1)
+        {
+            loadRandomQuestion();
+        }
+        else if(jTabbedPane1.getSelectedIndex() == 2)
         {
             loadExams();
         }
@@ -1458,36 +1875,6 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPasswordField4.setText("");
     }//GEN-LAST:event_jButton4MousePressed
 
-    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        
-        if(manager.creator_applications.containsKey(session.id))
-        {
-            int answer = JOptionPane.showConfirmDialog(rootPane, "You already applied to be a creator\nDo you want to withdraw your application?\n\n", "Creator application", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                
-            if(answer == 0)
-            {
-                manager.deleteCreatorApplication(session.id);
-                JOptionPane.showMessageDialog(rootPane, "You successfuly withdrawed your Creator application!");
-            }
-        }
-        else
-        {
-          String answer = JOptionPane.showInputDialog(rootPane, "Hi, \nwe are glad that you decided to apply to be a creator.\nWe want to know why you would like to become one.\n\nPlease describe your application reasons:", "Creator application", JOptionPane.QUESTION_MESSAGE);  
-          
-          
-          if(answer != null)
-          {
-            manager.addCreatorApplication(session.id, answer);
-            JOptionPane.showMessageDialog(rootPane, "You successfuly applied to be a creator!"); 
-          }
-          else
-          {
-            JOptionPane.showMessageDialog(rootPane, "You canceled your application!"); 
-          }
-        }
-        
-    }//GEN-LAST:event_jButton2MouseClicked
-
     /**
      * @param args the command line arguments
      */
@@ -1527,7 +1914,6 @@ public class OADTurkUserUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
@@ -1539,9 +1925,6 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
@@ -1591,8 +1974,37 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     // End of variables declaration//GEN-END:variables
-
     
+    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {                                      
+
+        if(manager.creator_applications.containsKey(session.id))
+        {
+            int answer = JOptionPane.showConfirmDialog(rootPane, "You already applied to be a creator\nDo you want to withdraw your application?\n\n", "Creator application", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            if(answer == 0)
+            {
+                manager.deleteCreatorApplication(session.id);
+                JOptionPane.showMessageDialog(rootPane, "You successfuly withdrawed your Creator application!");
+            }
+        }
+        else
+        {
+            String answer = JOptionPane.showInputDialog(rootPane, "Hi, \nwe are glad that you decided to apply to be a creator.\nWe want to know which Learning Application you would like us to create.\n\nPlease enter LA name:", "Creator application", JOptionPane.QUESTION_MESSAGE);
+
+            if(answer != null)
+            {
+                manager.addCreatorApplication(session.id, answer);
+                JOptionPane.showMessageDialog(rootPane, "You successfuly applied to be a creator of new LA!");
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(rootPane, "You canceled your application!");
+            }
+        }
+
+    }                                     
+    
+
     private void close()
     {
         WindowEvent winClosing = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
@@ -1621,9 +2033,6 @@ class ButtonRenderer extends JButton implements TableCellRenderer {
   }
 }
 
-/**
- * @version 1.0 11/09/98
- */
 
 class ButtonEditor extends DefaultCellEditor {
   protected JButton button;
@@ -1768,5 +2177,242 @@ class ButtonEditor extends DefaultCellEditor {
   @Override
   protected void fireEditingStopped() {
     super.fireEditingStopped();
+  }
+}
+
+
+class CreatorButtonEditor extends DefaultCellEditor {
+  protected JButton button;
+
+  private String label;
+
+  private boolean isPushed;
+  
+  private int luid;
+  
+  private boolean delete_lua = false;
+  
+  private int rw;
+  
+  private String catname;
+  private int approved;
+  
+
+  public CreatorButtonEditor(JCheckBox checkBox) {
+    super(checkBox);
+    button = new JButton();
+    //button.setOpaque(true);
+    button.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        fireEditingStopped();
+      }
+    });
+  }
+
+  public Component getTableCellEditorComponent(JTable table, Object value,
+      boolean isSelected, int row, int column) {
+     
+    label = (value == null) ? "" : value.toString();
+    button.setText(label);
+    isPushed = true;
+    luid = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+    catname = table.getModel().getValueAt(row, 4).toString();
+    approved = Integer.parseInt(table.getModel().getValueAt(row, 3).toString());
+    rw = row;
+    return button;
+  }
+
+  @Override
+  public Object getCellEditorValue() {
+    
+    if (isPushed) 
+    {
+        LearningApp lapp = OADTurkUserUI.manager.la.get(OADTurkUserUI.session.manager.users.get(OADTurkUserUI.session.id).creator_la);
+        LearningUnit lunit = lapp.lu.get(luid);
+        
+        
+        if(button.getText().equals("Delete"))
+        {
+            int answer = JOptionPane.showConfirmDialog(button, "Are you sure that you want to delete this LU?\n", "LU deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                
+            if(answer == 0)
+            {
+                JOptionPane.showMessageDialog(button, "You successfuly deleted this LU!");
+                OADTurkUserUI.manager.deleteLU(OADTurkUserUI.manager.users.get(OADTurkUserUI.session.id).creator_la, luid);
+                
+                delete_lua = true;
+            }
+        }
+        
+        if(button.getText().equals("Save"))
+        {
+            if(approved != 0 && approved != 1)
+            {
+                JOptionPane.showMessageDialog(button, "The value of approved field can be either 0 or 1!", "Save LU", JOptionPane.ERROR_MESSAGE);
+                OADTurkUserUI.modelLUA.setValueAt(lunit.approved, rw, 3);
+            }
+            else if(!OADTurkUserUI.manager.categoryExists(lapp.id, catname) && !catname.equals("Uncategorized"))
+            {
+                JOptionPane.showMessageDialog(button, "The category you want to use does not exist!", "Save LU", JOptionPane.ERROR_MESSAGE);
+                OADTurkUserUI.modelLUA.setValueAt(lapp.categories.get(lunit.cat_id), rw, 4);
+            }
+            else
+            {
+                int catid = -1;
+                
+                if(!catname.equals("Uncategorized"))
+                    catid = OADTurkUserUI.manager.getCategoryID(lapp.id, catname);
+                
+                if(approved == 0 && lunit.approved == 1)
+                    OADTurkUserUI.manager.removeFromExams(lapp.id, luid);
+                
+                if(catid == -1 && lunit.cat_id != -1)
+                    OADTurkUserUI.manager.removeFromExams(lapp.id, luid);
+                            
+                OADTurkUserUI.manager.editLU(lapp.id, luid, approved, catid);
+                JOptionPane.showMessageDialog(button, "You successfuly saved this LU!");
+            }
+        }
+        
+        
+    }
+    isPushed = false;
+    
+    return new String(label);
+  }
+
+  @Override
+  public boolean stopCellEditing() {
+    isPushed = false;
+    return super.stopCellEditing();
+  }
+
+  @Override
+  protected void fireEditingStopped() {
+    super.fireEditingStopped();
+    
+    if(delete_lua)
+    {
+        OADTurkUserUI.modelLUA.removeRow(rw);
+        delete_lua = false;   
+    }
+  }
+}
+
+class CategoryButtonEditor extends DefaultCellEditor {
+  protected JButton button;
+
+  private String label;
+
+  private boolean isPushed;
+  
+  private int catid;
+  private String catname;
+  
+  public int rw;
+  
+  private boolean delete_cat = false;
+
+  public CategoryButtonEditor(JCheckBox checkBox) {
+    super(checkBox);
+    button = new JButton();
+    //button.setOpaque(true);
+    button.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        fireEditingStopped();
+      }
+    });
+  }
+
+  public Component getTableCellEditorComponent(JTable table, Object value,
+      boolean isSelected, int row, int column) {
+     
+    label = (value == null) ? "" : value.toString();
+    button.setText(label);
+    isPushed = true;
+    catid = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+    catname = table.getModel().getValueAt(row, 1).toString();
+    rw = row;
+    return button;
+  }
+
+  @Override
+  public Object getCellEditorValue() {
+    
+    if (isPushed) 
+    {
+        LearningApp lapp = OADTurkUserUI.manager.la.get(OADTurkUserUI.manager.users.get(OADTurkUserUI.session.id).creator_la);
+        
+        if(button.getText().equals("Delete"))
+        {
+            int answer = JOptionPane.showConfirmDialog(button, "Are you sure that you want to delete this category?\n", "Category deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                
+            if(answer == 0)
+            {
+                JOptionPane.showMessageDialog(button, "You successfuly deleted this category!");
+                String old_cat = lapp.categories.get(catid);
+                OADTurkUserUI.manager.deleteCategory(OADTurkUserUI.manager.users.get(OADTurkUserUI.session.id).creator_la, catid);
+                
+                for(int i = 0; i < OADTurkUserUI.modelLUA.getRowCount(); i++)
+                {
+                    if(OADTurkUserUI.modelLUA.getValueAt(i, 4).equals(old_cat))
+                    {
+                        OADTurkUserUI.modelLUA.setValueAt("Uncategorized", i, 4);
+                    }
+                }
+                
+                
+                delete_cat = true;
+            }
+        }
+        
+        if(button.getText().equals("Save"))
+        {
+            String old_cat = lapp.categories.get(catid);
+            
+            if(OADTurkUserUI.manager.categoryExists(lapp.id, catname) && !old_cat.equals(catname))
+            {
+                JOptionPane.showMessageDialog(button, "Category with that name already exists!", "Save category", JOptionPane.ERROR_MESSAGE);
+                OADTurkUserUI.modelCAT.setValueAt(old_cat, rw, 1);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(button, "You successfuly saved category!");
+                OADTurkUserUI.manager.saveCategory(OADTurkUserUI.manager.users.get(OADTurkUserUI.session.id).creator_la, catid, catname);
+
+                for(int i = 0; i < OADTurkUserUI.modelLUA.getRowCount(); i++)
+                {
+                    if(OADTurkUserUI.modelLUA.getValueAt(i, 4).equals(old_cat))
+                    {
+                        OADTurkUserUI.modelLUA.setValueAt(catname, i, 4);
+                    }
+                }
+            }
+            
+        }
+        
+        
+    }
+    isPushed = false;
+    return new String(label);
+  }
+
+  @Override
+  public boolean stopCellEditing() {
+    isPushed = false;
+    return super.stopCellEditing();
+  }
+
+  @Override
+  protected void fireEditingStopped() {
+    super.fireEditingStopped();
+    
+    if(delete_cat)
+    {
+        OADTurkUserUI.modelCAT.removeRow(rw);
+        delete_cat = false;   
+    }
+    
+    
   }
 }

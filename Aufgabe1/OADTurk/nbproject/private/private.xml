@@ -2,6 +2,14 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/home/am1704/Desktop/oad_2017/Aufgabe1/OADTurk/src/my/oadturk/OADTurkUserUI.java</file>
+            <file>file:/home/am1704/Desktop/oad_2017/Aufgabe1/OADTurk/src/my/oadturk/DataManager.java</file>
+            <file>file:/home/am1704/Desktop/oad_2017/Aufgabe1/OADTurk/src/my/oadturk/OADTurkExamUI.java</file>
+            <file>file:/home/am1704/Desktop/oad_2017/Aufgabe1/OADTurk/src/my/oadturk/Exam.java</file>
+            <file>file:/home/am1704/Desktop/oad_2017/Aufgabe1/OADTurk/src/my/oadturk/SessionInfo.java</file>
+            <file>file:/home/am1704/Desktop/oad_2017/Aufgabe1/OADTurk/src/my/oadturk/UserInfo.java</file>
+            <file>file:/home/am1704/Desktop/oad_2017/Aufgabe1/OADTurk/src/my/oadturk/ExamResults.java</file>
+        </group>
     </open-files>
 </project-private>
