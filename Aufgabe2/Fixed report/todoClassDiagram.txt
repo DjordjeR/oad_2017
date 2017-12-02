@@ -1,0 +1,10 @@
+Program structure
+
+
+1. Data manager Class
+
+Ovo je nas model, odavde dolaze svi podaci
+
+
+2. OADTurk* klase su nasi view
+Ovdje je GUI i ove klase uzimaju podatke iz data manager-a

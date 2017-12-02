@@ -52,8 +52,15 @@ public class OADTurkNewLU extends javax.swing.JFrame {
             jComboBox6.addItem(entry.getValue());
         }
         
-        
-
+        // NOTE: Creator is not required to apply if this is creators LA
+        if(ses.getLevelText().equals("Creator"))
+        {
+            jButton1.setText("CONFIRM");
+        }
+        else
+        {
+            jButton1.setText("APPLY");
+        }
     }
 
     /**
