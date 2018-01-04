@@ -73,7 +73,12 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         
         jLabel1.setText(session.manager.users.get(session.id).name + " (" + session.getLevelText() + ")");
         
-        JLabel lab1 = new JLabel("Creator Panel");
+        String text = "Creator panel";
+        
+        if(session.manager.users.get(session.id).tutor)
+            text = "Tutor panel";
+        
+        JLabel lab1 = new JLabel(text);
         lab1.setPreferredSize(new Dimension(240, 30));
         jTabbedPane1.setTabComponentAt(0, lab1); 
         
@@ -151,6 +156,12 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jButton8.setFocusPainted(false);
         jButton8.setContentAreaFilled(false);
         
+        jButton12.setFocusPainted(false);
+        jButton12.setContentAreaFilled(false);
+        
+        jButton13.setFocusPainted(false);
+        jButton13.setContentAreaFilled(false);
+        
         //jToggleButton1.setFocusPainted(false);
         //jToggleButton1.setContentAreaFilled(false);
         
@@ -219,6 +230,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         dm_results.addColumn("Achieved Points");
         dm_results.addColumn("Max Points");
         dm_results.addColumn("Note");
+        dm_results.addColumn("Feedbacks");
         
         table_results = new JTable(dm_results);
                 
@@ -237,7 +249,11 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         table_results.getColumn("Date").setResizable(false);
         table_results.getColumn("Note").setResizable(false);
         table_results.getColumn("Max Points").setResizable(false);
+         table_results.getColumn("Feedbacks").setResizable(false);
         table_results.getTableHeader().setReorderingAllowed(false);
+        
+        table_results.getColumn("Feedbacks").setCellRenderer(new ButtonRenderer());
+        table_results.getColumn("Feedbacks").setCellEditor(new ResultsButtonEditor(new JCheckBox()));
                    
         JScrollPane scroll = new JScrollPane(table_results);
         jPanel16.add(scroll, BorderLayout.CENTER);
@@ -469,6 +485,8 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
+        jButton12 = new javax.swing.JButton();
+        jButton13 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jPanel11 = new javax.swing.JPanel();
         jCheckBox1 = new javax.swing.JCheckBox();
@@ -538,11 +556,11 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1310, Short.MAX_VALUE)
+            .addGap(0, 1325, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 678, Short.MAX_VALUE)
+            .addGap(0, 688, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("tab1", jPanel2);
@@ -575,8 +593,6 @@ public class OADTurkUserUI extends javax.swing.JFrame {
             }
         });
 
-        jButton8.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-        jButton8.setForeground(java.awt.Color.black);
         jButton8.setText("Verify");
         jButton8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jButton8.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -591,13 +607,35 @@ public class OADTurkUserUI extends javax.swing.JFrame {
             }
         });
 
+        jButton12.setText("Evaluate LU");
+        jButton12.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray));
+        jButton12.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton12.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton12MouseClicked(evt);
+            }
+        });
+
+        jButton13.setText("Additional Learning Material");
+        jButton13.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.gray));
+        jButton13.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton13.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton13MouseClicked(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
+            .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -607,13 +645,17 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addContainerGap(20, Short.MAX_VALUE)
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-                        .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE))
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(14, 14, 14))
+                .addContainerGap()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel8Layout.createSequentialGroup()
+                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jButton13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jLabel4.setBackground(java.awt.Color.white);
@@ -715,7 +757,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 1278, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGap(55, 55, 55)
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -725,7 +767,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, 490, Short.MAX_VALUE))
-                        .addGap(0, 205, Short.MAX_VALUE))
+                        .addGap(0, 223, Short.MAX_VALUE))
                     .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -735,7 +777,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
+                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel13, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -900,22 +942,18 @@ public class OADTurkUserUI extends javax.swing.JFrame {
             }
         });
 
-        jTextField5.setBackground(java.awt.Color.white);
         jTextField5.setFont(new java.awt.Font("Ubuntu Light", 0, 24)); // NOI18N
         jTextField5.setForeground(java.awt.Color.gray);
         jTextField5.setText("Max");
 
-        jTextField6.setBackground(java.awt.Color.white);
         jTextField6.setFont(new java.awt.Font("Ubuntu Light", 0, 24)); // NOI18N
         jTextField6.setForeground(java.awt.Color.gray);
         jTextField6.setText("Mustermann");
 
-        jTextField7.setBackground(java.awt.Color.white);
         jTextField7.setFont(new java.awt.Font("Ubuntu Light", 0, 24)); // NOI18N
         jTextField7.setForeground(java.awt.Color.gray);
         jTextField7.setText("MaxM");
 
-        jTextField8.setBackground(java.awt.Color.white);
         jTextField8.setFont(new java.awt.Font("Ubuntu Light", 0, 24)); // NOI18N
         jTextField8.setForeground(java.awt.Color.gray);
         jTextField8.setText("mustermann@me.com");
@@ -1252,283 +1290,338 @@ public class OADTurkUserUI extends javax.swing.JFrame {
             JScrollPane scrollLUA = new javax.swing.JScrollPane();
             
             scrollLUA.setViewportView(tableLUA);
-                      
-            JLabel labelEdit = new javax.swing.JLabel();
-            JLabel labelExam = new javax.swing.JLabel();
-            JLabel labelCreate = new javax.swing.JLabel();
             
-            JTable tableCAT = new javax.swing.JTable();
-            modelCAT = new javax.swing.table.DefaultTableModel(
-                new Object [][] { },
-                new String [] {
-                    "ID", "Category", "Save", "Delete"
-                }
-            ) {
-                Class[] types = new Class [] {
-                    java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+            if(!manager.users.get(session.id).co_creator)
+            {
+                          
+                JLabel labelEdit = new javax.swing.JLabel();
+                JLabel labelExam = new javax.swing.JLabel();
+                JLabel labelCreate = new javax.swing.JLabel();
+
+                JTable tableCAT = new javax.swing.JTable();
+                modelCAT = new javax.swing.table.DefaultTableModel(
+                    new Object [][] { },
+                    new String [] {
+                        "ID", "Category", "Save", "Delete"
+                    }
+                ) {
+                    Class[] types = new Class [] {
+                        java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+                    };
+
+                    public Class getColumnClass(int columnIndex) {
+                        return types [columnIndex];
+                    }
+
+                    @Override
+                    public boolean isCellEditable(int row, int column)
+                    {
+                        if(column == 0)
+                            return false;
+
+                        return true;
+                    }
                 };
 
-                public Class getColumnClass(int columnIndex) {
-                    return types [columnIndex];
+                labelEdit.setText("Edit Categories:");
+
+                tableCAT.setModel(modelCAT);
+
+                tableCAT.getColumn("Save").setCellRenderer(new ButtonRenderer());
+                tableCAT.getColumn("Save").setCellEditor(new CategoryButtonEditor(new JCheckBox()));
+
+                tableCAT.getColumn("Delete").setCellRenderer(new ButtonRenderer());
+                tableCAT.getColumn("Delete").setCellEditor(new CategoryButtonEditor(new JCheckBox()));
+
+                tableCAT.setRowHeight(50);
+                tableCAT.setRowSelectionAllowed(false);
+                tableCAT.setCellSelectionEnabled(false);
+                tableCAT.setColumnSelectionAllowed(false);
+                tableCAT.getColumn("ID").setResizable(false);
+                tableCAT.getColumn("Category").setResizable(false);
+                tableCAT.getColumn("Save").setResizable(false);
+                tableCAT.getColumn("Delete").setResizable(false);
+                tableCAT.getTableHeader().setReorderingAllowed(false);
+
+                tableCAT.getColumnModel().getColumn(0).setMaxWidth(45);
+                tableCAT.getColumnModel().getColumn(1).setPreferredWidth(200);
+                tableCAT.getColumnModel().getColumn(1).setMaxWidth(200);
+                tableCAT.getColumnModel().getColumn(2).setPreferredWidth(130);
+                tableCAT.getColumnModel().getColumn(2).setMaxWidth(130);
+                tableCAT.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+
+                if (modelCAT.getRowCount() > 0) 
+                {
+                    for (int i = modelCAT.getRowCount() - 1; i > -1; i--) 
+                    {
+                        modelCAT.removeRow(i);
+                    }
+                }
+
+                for(HashMap.Entry<Integer, String> entry : lapp.categories.entrySet())
+                {
+                    Object[] row = {entry.getKey(), entry.getValue(), "Save", "Delete"};
+                    modelCAT.addRow(row);
+                }
+
+
+
+                JScrollPane scrollCAT = new javax.swing.JScrollPane();
+
+                scrollCAT.setViewportView(tableCAT);
+
+                labelExam.setText("Exams:");
+
+                JButton editEX = new javax.swing.JButton();
+                JButton deleteEX = new javax.swing.JButton();
+                JButton newEX = new javax.swing.JButton();
+
+
+                JButton addCAT = new javax.swing.JButton();
+                JButton editMaterials = new javax.swing.JButton();
+                
+                
+                editMaterials.setFocusPainted(false);
+                editMaterials.setContentAreaFilled(false);
+
+                editEX.setFocusPainted(false);
+                editEX.setContentAreaFilled(false);
+
+                deleteEX.setFocusPainted(false);
+                deleteEX.setContentAreaFilled(false);
+
+                newEX.setFocusPainted(false);
+                newEX.setContentAreaFilled(false);
+
+                addCAT.setFocusPainted(false);
+                addCAT.setContentAreaFilled(false);
+
+                editMaterials.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
+                editMaterials.setForeground(java.awt.Color.darkGray);
+                editMaterials.setText("Edit Materials");
+                editMaterials.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
+                editMaterials.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+                
+                editEX.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
+                editEX.setForeground(java.awt.Color.darkGray);
+                editEX.setText("Edit");
+                editEX.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
+                editEX.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+                deleteEX.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
+                deleteEX.setForeground(java.awt.Color.darkGray);
+                deleteEX.setText("Delete");
+                deleteEX.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
+                deleteEX.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+                newEX.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
+                newEX.setForeground(java.awt.Color.darkGray);
+                newEX.setText("New Exam");
+                newEX.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
+                newEX.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+
+
+
+                labelCreate.setText("New category / Materials:");
+
+                addCAT.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
+                addCAT.setForeground(java.awt.Color.darkGray);
+                addCAT.setText("Add Category");
+                addCAT.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
+                addCAT.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+                JComboBox<String> comboEX = new javax.swing.JComboBox<String>();
+
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(new Date());
+
+                for(HashMap.Entry<Integer, Exam> entry : lapp.exam.entrySet())
+                {
+                    if(cal.before(entry.getValue().date))
+                    {
+                       comboEX.addItem(entry.getKey() + " - " + entry.getValue().name); 
+                    }
                 }
                 
-                @Override
-                public boolean isCellEditable(int row, int column)
+                
+                editMaterials.addMouseListener(new java.awt.event.MouseAdapter()
                 {
-                    if(column == 0)
-                        return false;
-                    
-                    return true;
-                }
-            };
-            
-            labelEdit.setText("Edit Categories:");
-
-            tableCAT.setModel(modelCAT);
-            
-            tableCAT.getColumn("Save").setCellRenderer(new ButtonRenderer());
-            tableCAT.getColumn("Save").setCellEditor(new CategoryButtonEditor(new JCheckBox()));
-            
-            tableCAT.getColumn("Delete").setCellRenderer(new ButtonRenderer());
-            tableCAT.getColumn("Delete").setCellEditor(new CategoryButtonEditor(new JCheckBox()));
-            
-            tableCAT.setRowHeight(50);
-            tableCAT.setRowSelectionAllowed(false);
-            tableCAT.setCellSelectionEnabled(false);
-            tableCAT.setColumnSelectionAllowed(false);
-            tableCAT.getColumn("ID").setResizable(false);
-            tableCAT.getColumn("Category").setResizable(false);
-            tableCAT.getColumn("Save").setResizable(false);
-            tableCAT.getColumn("Delete").setResizable(false);
-            tableCAT.getTableHeader().setReorderingAllowed(false);
-            
-            tableCAT.getColumnModel().getColumn(0).setMaxWidth(45);
-            tableCAT.getColumnModel().getColumn(1).setPreferredWidth(200);
-            tableCAT.getColumnModel().getColumn(1).setMaxWidth(200);
-            tableCAT.getColumnModel().getColumn(2).setPreferredWidth(130);
-            tableCAT.getColumnModel().getColumn(2).setMaxWidth(130);
-            tableCAT.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-            
-            if (modelCAT.getRowCount() > 0) 
-            {
-                for (int i = modelCAT.getRowCount() - 1; i > -1; i--) 
-                {
-                    modelCAT.removeRow(i);
-                }
-            }
-            
-            for(HashMap.Entry<Integer, String> entry : lapp.categories.entrySet())
-            {
-                Object[] row = {entry.getKey(), entry.getValue(), "Save", "Delete"};
-                modelCAT.addRow(row);
-            }
-            
-            
-            
-            JScrollPane scrollCAT = new javax.swing.JScrollPane();
-            
-            scrollCAT.setViewportView(tableCAT);
-
-            labelExam.setText("Exams:");
-            
-            JButton editEX = new javax.swing.JButton();
-            JButton deleteEX = new javax.swing.JButton();
-            JButton newEX = new javax.swing.JButton();
-            
-            
-            JButton addCAT = new javax.swing.JButton();
-            
-            
-            editEX.setFocusPainted(false);
-            editEX.setContentAreaFilled(false);
-            
-            deleteEX.setFocusPainted(false);
-            deleteEX.setContentAreaFilled(false);
-            
-            newEX.setFocusPainted(false);
-            newEX.setContentAreaFilled(false);
-            
-            addCAT.setFocusPainted(false);
-            addCAT.setContentAreaFilled(false);
-
-            editEX.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
-            editEX.setForeground(java.awt.Color.darkGray);
-            editEX.setText("Edit");
-            editEX.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
-            editEX.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-            
-            
-
-            deleteEX.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
-            deleteEX.setForeground(java.awt.Color.darkGray);
-            deleteEX.setText("Delete");
-            deleteEX.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
-            deleteEX.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-
-            newEX.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
-            newEX.setForeground(java.awt.Color.darkGray);
-            newEX.setText("New Exam");
-            newEX.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
-            newEX.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-            
-            
-            
-
-            labelCreate.setText("New Category:");
-
-            addCAT.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
-            addCAT.setForeground(java.awt.Color.darkGray);
-            addCAT.setText("Add Category");
-            addCAT.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
-            addCAT.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-            
-            JComboBox<String> comboEX = new javax.swing.JComboBox<String>();
-            
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(new Date());
-            
-            for(HashMap.Entry<Integer, Exam> entry : lapp.exam.entrySet())
-            {
-                if(cal.before(entry.getValue().date))
-                {
-                   comboEX.addItem(entry.getKey() + " - " + entry.getValue().name); 
-                }
-            }
-            
-            deleteEX.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mousePressed(java.awt.event.MouseEvent evt) {
-                    
-                    
-                    if(comboEX.getItemCount() == 0)
+                    public void mousePressed(java.awt.event.MouseEvent evt)
                     {
-                        JOptionPane.showMessageDialog(rootPane, "There are no exams that can be deleted!", "Exam deletion", JOptionPane.ERROR_MESSAGE);
+                        OADTurkMaterials user = new OADTurkMaterials(session.manager.users.get(session.id).creator_la, session);
+                        user.setVisible(true);
                     }
-                    else
-                    {
-                        String[] split = comboEX.getSelectedItem().toString().split(" ");
-                        int exid = Integer.parseInt(split[0]);
-                        int answer = JOptionPane.showConfirmDialog(rootPane, "Are you sure that you want to delete this exam?\n", "Exam deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        if(answer == 0)
+                });
+                
+                
+                
+                deleteEX.addMouseListener(new java.awt.event.MouseAdapter() {
+                    public void mousePressed(java.awt.event.MouseEvent evt) {
+
+
+                        if(comboEX.getItemCount() == 0)
                         {
-                           comboEX.removeItem(comboEX.getSelectedItem());
-                           manager.deleteExam(lapp.id, exid);
-                           JOptionPane.showMessageDialog(rootPane, "You successfuly deleted an exam!");
-                        }
-                    }
-                }
-            });
-            
-            editEX.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mousePressed(java.awt.event.MouseEvent evt) {
-                   System.out.println("TODO: Implement exam editing!");
-                }
-            });
-            
-            
-            newEX.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mousePressed(java.awt.event.MouseEvent evt) {
-                   System.out.println("TODO: Implement exam creating!");
-                }
-            });
-            
-            JTextField textCAT = new javax.swing.JTextField();
-            
-            addCAT.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mousePressed(java.awt.event.MouseEvent evt) {
-                    String catname = textCAT.getText();
-                    
-                    if(catname.length() < 3)
-                    {
-                        JOptionPane.showMessageDialog(rootPane, "Category name must be at least 3 characters long!", "Category creation", JOptionPane.ERROR_MESSAGE);
-                    }
-                    else if(manager.categoryExists(lapp.id, catname))
-                    {
-                        JOptionPane.showMessageDialog(rootPane, "Category with that name already exists!", "Category creation", JOptionPane.ERROR_MESSAGE);
-                    }
-                    else
-                    {
-                        int answer = JOptionPane.showConfirmDialog(rootPane, "Are you sure that you want to create this category?\n", "Category creation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        if(answer == 0)
-                        {
-                           Object[] row = {manager.insertCat(lapp.id, catname) ,catname, "Save", "Delete"};
-                           modelCAT.addRow(row);
-                           JOptionPane.showMessageDialog(rootPane, "You successfuly created a category!");
+                            JOptionPane.showMessageDialog(rootPane, "There are no exams that can be deleted!", "Exam deletion", JOptionPane.ERROR_MESSAGE);
                         }
                         else
-                            JOptionPane.showMessageDialog(rootPane, "You refused to create a category!");
+                        {
+                            String[] split = comboEX.getSelectedItem().toString().split(" ");
+                            int exid = Integer.parseInt(split[0]);
+                            int answer = JOptionPane.showConfirmDialog(rootPane, "Are you sure that you want to delete this exam?\n", "Exam deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            if(answer == 0)
+                            {
+                               comboEX.removeItem(comboEX.getSelectedItem());
+                               manager.deleteExam(lapp.id, exid);
+                               JOptionPane.showMessageDialog(rootPane, "You successfuly deleted an exam!");
+                            }
+                        }
                     }
-                }
-            });
-            
-            javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-            jPanel2.setLayout(jPanel2Layout);
-            jPanel2Layout.setHorizontalGroup(
-                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel2Layout.createSequentialGroup()
-                    .addContainerGap(53, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(labelEdit)
-                                .addComponent(scrollCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 511, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                    .addComponent(labelCreate)
-                                    .addGap(530, 530, 530))
+                });
+
+                editEX.addMouseListener(new java.awt.event.MouseAdapter() {
+                    public void mousePressed(java.awt.event.MouseEvent evt) {
+                       System.out.println("TODO: Implement exam editing!");
+                    }
+                });
+
+
+                newEX.addMouseListener(new java.awt.event.MouseAdapter() {
+                    public void mousePressed(java.awt.event.MouseEvent evt) {
+                       System.out.println("TODO: Implement exam creating!");
+                    }
+                });
+
+                JTextField textCAT = new javax.swing.JTextField();
+
+                addCAT.addMouseListener(new java.awt.event.MouseAdapter() {
+                    public void mousePressed(java.awt.event.MouseEvent evt) {
+                        String catname = textCAT.getText();
+
+                        if(catname.length() < 3)
+                        {
+                            JOptionPane.showMessageDialog(rootPane, "Category name must be at least 3 characters long!", "Category creation", JOptionPane.ERROR_MESSAGE);
+                        }
+                        else if(manager.categoryExists(lapp.id, catname))
+                        {
+                            JOptionPane.showMessageDialog(rootPane, "Category with that name already exists!", "Category creation", JOptionPane.ERROR_MESSAGE);
+                        }
+                        else
+                        {
+                            int answer = JOptionPane.showConfirmDialog(rootPane, "Are you sure that you want to create this category?\n", "Category creation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            if(answer == 0)
+                            {
+                               Object[] row = {manager.insertCat(lapp.id, catname) ,catname, "Save", "Delete"};
+                               modelCAT.addRow(row);
+                               JOptionPane.showMessageDialog(rootPane, "You successfuly created a category!");
+                            }
+                            else
+                                JOptionPane.showMessageDialog(rootPane, "You refused to create a category!");
+                        }
+                    }
+                });
+
+                javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+                jPanel2.setLayout(jPanel2Layout);
+                jPanel2Layout.setHorizontalGroup(
+                    jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap(53, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(labelEdit)
+                                    .addComponent(scrollCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 511, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                        .addComponent(labelCreate)
+                                        .addGap(530, 530, 530))
+                                    .addComponent(labelExam)
+                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                                            .addComponent(editEX, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGap(42, 42, 42)
+                                            .addComponent(deleteEX, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(newEX, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(comboEX, javax.swing.GroupLayout.PREFERRED_SIZE, 556, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addComponent(textCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(addCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)   
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(editMaterials, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(labelLUA)
+                                    .addComponent(scrollLUA, javax.swing.GroupLayout.PREFERRED_SIZE, 1200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 57, Short.MAX_VALUE)))
+                        .addContainerGap())
+                );
+                jPanel2Layout.setVerticalGroup(
+                    jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(labelLUA)
+                        .addGap(18, 18, 18)
+                        .addComponent(scrollLUA, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(labelEdit)
+                            .addComponent(labelCreate))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(textCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(addCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(editMaterials, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(26, 26, 26)
                                 .addComponent(labelExam)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                                        .addComponent(editEX, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(42, 42, 42)
-                                        .addComponent(deleteEX, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(newEX, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(comboEX, javax.swing.GroupLayout.PREFERRED_SIZE, 556, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(jPanel2Layout.createSequentialGroup()
-                                            .addComponent(textCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(addCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(labelLUA)
-                                .addComponent(scrollLUA, javax.swing.GroupLayout.PREFERRED_SIZE, 1200, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(0, 57, Short.MAX_VALUE)))
-                    .addContainerGap())
-            );
-            jPanel2Layout.setVerticalGroup(
-                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel2Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(labelLUA)
-                    .addGap(18, 18, 18)
-                    .addComponent(scrollLUA, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(18, 18, 18)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(labelEdit)
-                        .addComponent(labelCreate))
-                    .addGap(18, 18, 18)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(textCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(addCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(26, 26, 26)
-                            .addComponent(labelExam)
-                            .addGap(18, 18, 18)
-                            .addComponent(comboEX, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(editEX, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(deleteEX, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(newEX, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addComponent(scrollCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addContainerGap(17, Short.MAX_VALUE))
-            );
+                                .addGap(18, 18, 18)
+                                .addComponent(comboEX, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(editEX, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(deleteEX, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(newEX, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(scrollCAT, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(17, Short.MAX_VALUE))
+                );
+            }
+            else
+            {
+                 javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+                jPanel2.setLayout(jPanel2Layout);
+                jPanel2Layout.setHorizontalGroup(
+                    jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap(53, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(labelLUA)
+                                    .addComponent(scrollLUA, javax.swing.GroupLayout.PREFERRED_SIZE, 1200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 57, Short.MAX_VALUE)))
+                        .addContainerGap())
+                );
+                jPanel2Layout.setVerticalGroup(
+                    jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(labelLUA)
+                        .addGap(18, 18, 18)
+                        .addComponent(scrollLUA, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addContainerGap(17, Short.MAX_VALUE))
+                );
+            }
+            
             
         }
-        else if(session.manager.users.get(session.id).level == 1)
+        else if(session.manager.users.get(session.id).level == 1 && !session.manager.users.get(session.id).tutor)
         {
             JLabel jLabel112 = new javax.swing.JLabel();
             JLabel jLabel113 = new javax.swing.JLabel();
@@ -1592,6 +1685,141 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                     .addGap(32, 32, 32)
                     .addComponent(jButton122, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap(348, Short.MAX_VALUE))
+            );
+        }
+        else if(session.manager.users.get(session.id).level == 1 && session.manager.users.get(session.id).tutor)
+        {
+            JButton tutor_button = new JButton();
+            JLabel tutor_label = new JLabel();
+            JLabel tutor_label2 = new JLabel();
+            JComboBox tutor_combo = new JComboBox();
+            JScrollPane tutor_scroll = new JScrollPane();
+            JTable tutor_table = new JTable();
+            
+            tutor_label.setText("Please select user:");
+            
+            for(HashMap.Entry<Integer, UserInfo> entry : session.manager.users.entrySet())
+            {
+                 tutor_combo.addItem(entry.getKey() + " - " + entry.getValue().name); 
+            }
+      
+            tutor_button.setFont(new java.awt.Font("Ubuntu Light", 0, 15)); // NOI18N
+            tutor_button.setForeground(java.awt.Color.darkGray);
+            tutor_button.setText("Select");
+            tutor_button.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
+            tutor_button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            tutor_button.setFocusPainted(false);
+            tutor_button.setContentAreaFilled(false);
+            
+            DefaultTableModel tutor_model = new javax.swing.table.DefaultTableModel(
+                new Object [][] {
+
+                },
+                new String [] {
+                        "User ID", "Exam ID", "Exam", "Points", "Max Points", "Note", "Add Feedback"
+                }
+            );
+            
+            tutor_table.setModel(tutor_model);
+            
+            tutor_button.addMouseListener(new java.awt.event.MouseAdapter() {
+                    public void mousePressed(java.awt.event.MouseEvent evt) {
+                        
+                        int uid = tutor_combo.getSelectedIndex();
+                         if (tutor_model.getRowCount() > 0) 
+                        {
+                            for (int i = tutor_model.getRowCount() - 1; i > -1; i--) 
+                            {
+                                tutor_model.removeRow(i);
+                            }
+                        }
+
+                        for(int i = 0; i < session.manager.users.get(uid).finished_exams.size(); i++)
+                        {
+                            ExamResults res = session.manager.users.get(uid).finished_exams.get(i);
+                            Exam ex = session.manager.la.get(session.manager.users.get(session.id).tutor_la).exam.get(res.exam_id);
+                            
+                            float points = res.points;
+                            float max_points = ex.points_per_question * ex.num_of_questions;
+
+                            float percentage = points/max_points * 100;
+
+                            String note = "";
+
+                            if(percentage < 50)
+                                note = "Not Sufficient (5)";
+                            else if(percentage >= 50 && percentage < 62)
+                                note = "Sufficient (4)";
+                            else if(percentage >= 62 && percentage < 75)
+                                note = "Good (3)";
+                            else if(percentage >= 75 && percentage < 87)
+                                note = "Very Good (2)";
+                            else if(percentage >= 87)
+                                note = "Excellent (1)";        
+                            
+                            Object[] row = {uid, res.exam_id, ex.name,  res.points, ex.points_per_question * ex.num_of_questions, note, "Add Feedback"};
+                            
+                            tutor_model.addRow(row);
+                        }
+                    }
+             });
+            
+                  
+            
+            
+            tutor_scroll.setViewportView(tutor_table);
+
+            tutor_label2.setText("Finished exams:");
+            
+            
+            tutor_table.getColumn("Add Feedback").setCellRenderer(new ButtonRenderer());
+            tutor_table.getColumn("Add Feedback").setCellEditor(new TutorButtonEditor(new JCheckBox()));
+
+            tutor_table.setRowHeight(50);
+            tutor_table.setRowSelectionAllowed(false);
+            tutor_table.setCellSelectionEnabled(false);
+            tutor_table.setColumnSelectionAllowed(false);
+            tutor_table.getColumn("User ID").setResizable(false);
+            tutor_table.getColumn("Exam ID").setResizable(false);
+            tutor_table.getColumn("Exam").setResizable(false);
+            tutor_table.getColumn("Points").setResizable(false);
+            tutor_table.getColumn("Max Points").setResizable(false);
+            tutor_table.getColumn("Add Feedback").setResizable(false);
+            tutor_table.getTableHeader().setReorderingAllowed(false);
+
+            javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+            jPanel2.setLayout(jPanel2Layout);
+            jPanel2Layout.setHorizontalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(tutor_scroll)
+                        .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(tutor_label)
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(tutor_combo, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(tutor_button, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(tutor_label2))
+                            .addGap(0, 768, Short.MAX_VALUE)))
+                    .addContainerGap())
+            );
+            jPanel2Layout.setVerticalGroup(
+                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(tutor_label)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(tutor_button, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                        .addComponent(tutor_combo))
+                    .addGap(35, 35, 35)
+                    .addComponent(tutor_label2)
+                    .addGap(18, 18, 18)
+                    .addComponent(tutor_scroll, javax.swing.GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
+                    .addContainerGap())
             );
         }
     }
@@ -1719,7 +1947,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                 if(percentage < 50)
                     note = "Not Sufficient (5)";
                 else if(percentage >= 50 && percentage < 62)
-                    note = "Inufficient (4)";
+                    note = "Sufficient (4)";
                 else if(percentage >= 62 && percentage < 75)
                     note = "Good (3)";
                 else if(percentage >= 75 && percentage < 87)
@@ -1728,13 +1956,16 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                     note = "Excellent (1)";                       
 
 
-                Object[] row = {id, ex.name, dateFormat.format(cal.getTime()), ex.num_of_questions, exre.points, ex.points_per_question * ex.num_of_questions, note};
+                Object[] row = {id, ex.name, dateFormat.format(cal.getTime()), ex.num_of_questions, exre.points, ex.points_per_question * ex.num_of_questions, note, "View"};
                 dm_results.addRow(row);
             }
            
             
         }
         
+        JPanel subpanel = new JPanel();
+        
+        subpanel.setBackground(Color.white);
         JButton butt = new JButton();
         butt.setFocusPainted(false);
         butt.setContentAreaFilled(false);
@@ -1745,7 +1976,22 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         butt.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.black));
         butt.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         
-        jPanel16.add(butt, BorderLayout.AFTER_LAST_LINE);
+        subpanel.add(butt);
+        
+        
+        JButton butt2 = new JButton();
+        butt2.setFocusPainted(false);
+        butt2.setContentAreaFilled(false);
+        butt2.setFont(new java.awt.Font("Ubuntu Light", 0, 14)); // NOI18N
+        butt2.setForeground(java.awt.Color.black);
+        butt2.setText("SHARE RESULTS");
+        butt2.setPreferredSize(new Dimension(300, 50));
+        butt2.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.black));
+        butt2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        
+        subpanel.add(butt2);
+        
+        jPanel16.add(subpanel, BorderLayout.AFTER_LAST_LINE);
     }
     
               
@@ -1875,6 +2121,22 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPasswordField4.setText("");
     }//GEN-LAST:event_jButton4MousePressed
 
+    private void jButton12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton12MouseClicked
+        // TODO add your handling code here:
+        
+        OADTurkEvaluation user = new OADTurkEvaluation(jTabbedPane2.getSelectedIndex(), loaded_lu, session);
+        user.setVisible(true);
+    }//GEN-LAST:event_jButton12MouseClicked
+
+    private void jButton13MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton13MouseClicked
+        // TODO add your handling code here:
+        
+        
+        OADTurkMaterials user = new OADTurkMaterials(jTabbedPane2.getSelectedIndex(), session);
+        user.setVisible(true);
+         
+    }//GEN-LAST:event_jButton13MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -1914,6 +2176,8 @@ public class OADTurkUserUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton12;
+    private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
@@ -2414,5 +2678,139 @@ class CategoryButtonEditor extends DefaultCellEditor {
     }
     
     
+  }
+}
+
+
+class ResultsButtonEditor extends DefaultCellEditor {
+  protected JButton button;
+
+  private String label;
+
+  private boolean isPushed;
+  
+  private int ex_id;
+  
+  public int rw;
+  
+  private boolean delete_cat = false;
+
+  public ResultsButtonEditor(JCheckBox checkBox) {
+    super(checkBox);
+    button = new JButton();
+    //button.setOpaque(true);
+    button.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        fireEditingStopped();
+      }
+    });
+  }
+
+  public Component getTableCellEditorComponent(JTable table, Object value,
+      boolean isSelected, int row, int column) {
+     
+    label = (value == null) ? "" : value.toString();
+    button.setText(label);
+    isPushed = true;
+    ex_id = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+    return button;
+  }
+
+  @Override
+  public Object getCellEditorValue() {
+    
+    if (isPushed) 
+    {
+         int uid = OADTurkUserUI.session.id;
+         int laid = OADTurkUserUI.selected_la;
+         OADTurkFeedbacks user = new OADTurkFeedbacks(laid, ex_id, uid , OADTurkUserUI.session);
+         user.setVisible(true);
+    }
+    isPushed = false;
+    return new String(label);
+  }
+
+  @Override
+  public boolean stopCellEditing() {
+    isPushed = false;
+    return super.stopCellEditing();
+  }
+
+  @Override
+  protected void fireEditingStopped() {
+    super.fireEditingStopped();
+  }
+}
+
+class TutorButtonEditor extends DefaultCellEditor {
+  protected JButton button;
+
+  private String label;
+
+  private boolean isPushed;
+  
+  private int ex_id;
+  private int us_id;
+  
+  public int rw;
+  
+  private boolean delete_cat = false;
+
+  public TutorButtonEditor(JCheckBox checkBox) {
+    super(checkBox);
+    button = new JButton();
+    //button.setOpaque(true);
+    button.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        fireEditingStopped();
+      }
+    });
+  }
+
+  public Component getTableCellEditorComponent(JTable table, Object value,
+      boolean isSelected, int row, int column) {
+     
+    label = (value == null) ? "" : value.toString();
+    button.setText(label);
+    isPushed = true;
+    us_id = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+    ex_id = Integer.parseInt(table.getModel().getValueAt(row, 1).toString());
+    return button;
+  }
+
+  @Override
+  public Object getCellEditorValue() {
+    
+    if (isPushed) 
+    {
+         int uid = OADTurkUserUI.session.id;
+         int laid = OADTurkUserUI.session.manager.users.get(uid).tutor_la;
+         
+        String answer = JOptionPane.showInputDialog(button, "Please enter the feedback you want to send to user:", "Send feedback", JOptionPane.QUESTION_MESSAGE);
+
+        if(answer != null)
+        {
+            OADTurkUserUI.session.manager.addFeedback(us_id, uid, laid, ex_id, answer);
+            JOptionPane.showMessageDialog(button, "You successfuly added a feedback for a user!");
+        }
+        else
+        {
+            OADTurkUserUI.session.manager.deleteFeedback(us_id, uid, laid, ex_id);
+            JOptionPane.showMessageDialog(button, "You have successfully deleted your feedback!");
+        }
+    }
+    isPushed = false;
+    return new String(label);
+  }
+
+  @Override
+  public boolean stopCellEditing() {
+    isPushed = false;
+    return super.stopCellEditing();
+  }
+
+  @Override
+  protected void fireEditingStopped() {
+    super.fireEditingStopped();
   }
 }

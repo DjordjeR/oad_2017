@@ -9,10 +9,12 @@ public class DataManager
 {
     private int la_id = 0;
     private int user_id = 0;
+    private int feedback_id = 0;
         
     public HashMap<Integer, UserInfo> users = new HashMap<>();
     public HashMap<Integer, LearningApp> la = new HashMap<>();
     public HashMap<Integer, String> creator_applications = new HashMap();
+    public HashMap<Integer, Feedback> feedbacks = new HashMap();
     
     public DataManager()
     {
@@ -27,9 +29,13 @@ public class DataManager
     public boolean loadUsers()
     {
         registerUser("1", "User Userman", "User", "Userman", "user@oadturk.at", "1", 1);
+        registerUser("tutor", "Tutor ElTutore", "Tutor", "ElTutore", "tutor@oadturk.at", "tutor", 1);
+        registerUser("cocreator", "CoCreator CoCreatori", "CoCreator", "CoCreatori", "co-creator@oadturk.at", "cocreator", 2);
         registerUser("creator", "Creator Creatori", "Creator", "Creatori", "creator@oadturk.at", "creator", 2);
         registerUser("admin", "Admin Administratore", "Admin", "Administratore", "admin@oadturk.at", "admin", 3);
-        setCreator(1, 0);
+        setCreator(3, 0);
+        setCoCreator(2,0);
+        setTutor(1, 0);
         
         users.get(0).finished_exams.add(new ExamResults(0, 2, 3));
         users.get(0).registered_exams.add(new RegisteredExam(0, 0));
@@ -536,6 +542,45 @@ public class DataManager
         return true;
     }
     
+    public boolean setCoCreator(int uid, int laid)
+    {
+        
+        if(laid != -1)
+        {
+            users.get(uid).creator_la = laid;
+            users.get(uid).co_creator = true;
+        }
+        else
+        {
+            users.get(uid).creator_la = laid;
+            users.get(uid).co_creator = false;
+        }
+            
+        
+        // TODO: Save in database
+        
+        return true;
+    }
+    
+    
+    public boolean setTutor(int uid, int tut)
+    {
+         if(tut != -1)
+        {
+            users.get(uid).tutor_la = tut;
+            users.get(uid).tutor = true;
+        }
+        else
+        {
+            users.get(uid).tutor_la = tut;
+            users.get(uid).tutor = false;
+        }
+        
+        // TODO: Save in database
+        
+        return true;
+    }
+    
     
     public boolean deleteCategory(int laid, int catid)
     {
@@ -590,9 +635,70 @@ public class DataManager
     
     public boolean removeFromExams(int laid, int luid)
     {
+            
+        LearningApp lapp = la.get(laid);
         
-       // TODO: Write function
+        for(HashMap.Entry<Integer, Exam> entry : lapp.exam.entrySet())
+        {
+            for(int i = 0; i < entry.getValue().lus.size(); i++)
+            {
+                if(entry.getValue().lus.get(i) == luid)
+                {
+                    entry.getValue().lus.remove(i);
+                    break;
+                }
+            }
+        }
         
+       // TODO: Remove from database
+        
+        
+        return true;
+    }
+    
+    public boolean addFeedback(int uid, int tutor, int laid, int exid, String feedback)
+    {
+        feedbacks.put(feedback_id++, new Feedback(uid, tutor, laid, exid, feedback));
+        
+        // TODO: Add to database
+        
+        return true;
+    }
+    
+    
+    public boolean deleteFeedback(int uid, int tutor, int laid, int exid)
+    {
+         for(int i = 0; i < feedbacks.size(); i++)
+         {
+             Feedback f = feedbacks.get(i);
+             
+             if(f.uid == uid && f.ex_id == exid && f.laid == laid && f.tutor_id == tutor)
+             {
+                 feedbacks.remove(i);
+                 // TODO: Delete from database
+                 break;
+             }
+                 
+         }
+        
+         return true;
+    }
+    
+    public int addNewMaterial(int laid, int name, String type, String text)
+    {
+        
+        int id = la.get(laid).addMaterial(new Material(name, type, text));
+        
+        // TODO: Add to database
+        return id;
+    }
+    
+    public boolean removeMaterial(int laid, int id)
+    {
+        
+        la.get(laid).deleteMaterial(id);
+        
+        // TODO: Remove from database
         
         return true;
     }

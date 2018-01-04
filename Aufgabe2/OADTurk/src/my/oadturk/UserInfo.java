@@ -23,6 +23,9 @@ public class UserInfo {
     public int id;
     public int level;
     public int creator_la = -1;
+    public int tutor_la = -1;
+    public boolean co_creator = false;
+    public boolean tutor = false;
     
     public ArrayList<RegisteredExam> registered_exams = new ArrayList<>();
     public ArrayList<ExamResults> finished_exams = new ArrayList<>();
