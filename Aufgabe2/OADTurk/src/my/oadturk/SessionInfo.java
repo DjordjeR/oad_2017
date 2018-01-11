@@ -36,6 +36,12 @@ public class SessionInfo {
             text = "Creator";
         else if(user.level == 3)
             text = "Admin";
+        
+        if(user.tutor)
+            text = "Tutor";
+        
+        if(user.co_creator)
+            text = "Co-Creator";
                 
         return text;
                    

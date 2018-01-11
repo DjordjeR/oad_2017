@@ -3,6 +3,7 @@ package my.oadturk;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -35,6 +36,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -65,6 +68,8 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     
     private JTable table_results;
     private DefaultTableModel dm_results;
+    
+    public static DefaultTableModel reqs_model;
     
     public OADTurkUserUI(SessionInfo ses) {
         session = ses;
@@ -136,12 +141,318 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jTabbedPane5.setTabComponentAt(1, lab7);
         
         if(session.manager.users.get(session.id).level >= 3)
-            jLabel24.setVisible(false);
-        else
         {
             jPanel17.setBackground(Color.white);
             
+            JLabel uadmin = new JLabel();
+            JTable user_table = new JTable();
+            JScrollPane user_scroll = new JScrollPane();
             
+            JLabel la_reqs = new JLabel();
+            JLabel la_admin = new JLabel();
+            JLabel la_create = new JLabel();
+            JLabel la_edit = new JLabel();
+            
+            JTable requests_table = new JTable();
+            JScrollPane requests_scroll = new JScrollPane();
+            
+            
+            JTextField la_name = new JTextField();
+            
+            JButton add_la = new JButton();
+            JButton delete_la = new JButton();
+                        
+            JComboBox  user_box = new javax.swing.JComboBox<>();
+            JComboBox  la_box = new javax.swing.JComboBox<>();
+            
+            delete_la.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    String[] split = la_box.getSelectedItem().toString().split(" - ");
+                    
+                    int delete_la = Integer.parseInt(split[0]);
+                    
+                    int answer = JOptionPane.showConfirmDialog(rootPane, "Are you sure that you want to delete this LA?\n", "LA deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if(answer == 0)
+                    {
+                       la_box.removeItem(la_box.getSelectedItem());
+                       jComboBox1.removeItem(session.manager.la.get(delete_la).name);
+                       manager.deleteLA(delete_la);
+                       JOptionPane.showMessageDialog(rootPane, "You successfuly deleted a LA!");
+                    }
+                    
+                }
+            });
+            
+            add_la.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    String[] split = user_box.getSelectedItem().toString().split(" - ");
+                    
+                    int user_id = Integer.parseInt(split[0]);
+                    
+                    String laname = la_name.getText();
+                    
+                    if(laname.length() < 1)
+                    {
+                        JOptionPane.showMessageDialog(rootPane, "LA Name must be at least 1 character long!", "LA Creation", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                    if(session.manager.users.get(user_id).creator_la != -1)
+                    {
+                        JOptionPane.showMessageDialog(rootPane, "That user already has an LA!", "LA Creation", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    
+                    int answer = JOptionPane.showConfirmDialog(rootPane, "Are you sure that you want to add this LA?\n", "LA Creation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    if(answer == 0)
+                    {
+                       int laid = session.manager.insertLA(laname);
+                       session.manager.setCreator(user_id, laid);
+                       la_box.addItem(laid + " - " + laname);
+                       jComboBox1.addItem(laname);
+                       JOptionPane.showMessageDialog(rootPane, "You successfuly added a LA!");
+                    }
+                    
+                }
+            });
+            
+            
+            for(HashMap.Entry<Integer, LearningApp> entry : session.manager.la.entrySet())
+            {
+                la_box.addItem(entry.getKey() + " - " + entry.getValue().name);
+            }
+            
+            for(HashMap.Entry<Integer, UserInfo> entry : session.manager.users.entrySet())
+            {
+                user_box.addItem(entry.getKey() + " - " + entry.getValue().name);
+            }
+            
+            uadmin.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+            uadmin.setText("User Administration:");
+            
+            
+            javax.swing.table.DefaultTableModel user_model = new javax.swing.table.DefaultTableModel(
+                new Object [][] {
+
+                },
+                new String [] {
+                    "ID", "Username", "Name", "Mail", "Edit"
+                }
+            ) {
+                Class[] types = new Class [] {
+                    java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
+                };
+                boolean[] canEdit = new boolean [] {
+                    false, false, false, false, true
+                };
+
+                public Class getColumnClass(int columnIndex) {
+                    return types [columnIndex];
+                }
+
+                public boolean isCellEditable(int rowIndex, int columnIndex) {
+                    return canEdit [columnIndex];
+                }
+            };
+            
+            
+            
+             
+            
+            user_table.setModel(user_model);
+            user_table.setRowHeight(50);
+            
+            user_table.getColumn("Edit").setCellRenderer(new ButtonRenderer());
+            user_table.getColumn("Edit").setCellEditor(new UsersButtonEditor(new JCheckBox()));
+            
+            
+            if (user_model.getRowCount() > 0) 
+                {
+                    for (int i = user_model.getRowCount() - 1; i > -1; i--) 
+                    {
+                        user_model.removeRow(i);
+                    }
+                }
+            
+            
+            for(HashMap.Entry<Integer, UserInfo> entry : session.manager.users.entrySet())
+            {
+                Object[] row = {entry.getKey(), entry.getValue().user, entry.getValue().name, entry.getValue().mail, "Edit"};
+                user_model.addRow(row);
+            }
+            
+            
+            user_scroll.setViewportView(user_table);
+            if (user_table.getColumnModel().getColumnCount() > 0) {
+                user_table.getColumnModel().getColumn(0).setResizable(false);
+                user_table.getColumnModel().getColumn(0).setPreferredWidth(100);
+                user_table.getColumnModel().getColumn(1).setResizable(false);
+                user_table.getColumnModel().getColumn(1).setPreferredWidth(300);
+                user_table.getColumnModel().getColumn(2).setResizable(false);
+                user_table.getColumnModel().getColumn(2).setPreferredWidth(500);
+                user_table.getColumnModel().getColumn(3).setResizable(false);
+                user_table.getColumnModel().getColumn(3).setPreferredWidth(500);
+                user_table.getColumnModel().getColumn(4).setResizable(false);
+                user_table.getColumnModel().getColumn(4).setPreferredWidth(300);
+            }
+
+            la_reqs.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+            la_reqs.setText("LA Requests:");
+            
+            
+             reqs_model = new javax.swing.table.DefaultTableModel(
+                new Object [][] {
+
+                },
+                new String [] {
+                    "ID", "User", "Text", "Delete"
+                }
+            ) {
+                boolean[] canEdit = new boolean [] {
+                    false, false, false, true
+                };
+
+                public boolean isCellEditable(int rowIndex, int columnIndex) {
+                    return canEdit [columnIndex];
+                }
+            };
+             
+             
+             
+            requests_table.setModel(reqs_model);
+            requests_table.setRowHeight(50);
+            
+            requests_table.getColumn("Delete").setCellRenderer(new ButtonRenderer());
+            requests_table.getColumn("Delete").setCellEditor(new RequestsButtonEditor(new JCheckBox()));
+            
+             if (reqs_model.getRowCount() > 0) 
+                {
+                    for (int i = reqs_model.getRowCount() - 1; i > -1; i--) 
+                    {
+                        reqs_model.removeRow(i);
+                    }
+                }
+            
+            
+            for(HashMap.Entry<Integer, Application> entry : session.manager.creator_applications.entrySet())
+            {
+                Object[] row = {entry.getKey(), session.manager.users.get(entry.getValue().uid).name, entry.getValue().text, "Delete"};
+                reqs_model.addRow(row);
+            }
+            
+            requests_scroll.setViewportView(requests_table);
+            if (requests_table.getColumnModel().getColumnCount() > 0) {
+                requests_table.getColumnModel().getColumn(0).setResizable(false);
+                requests_table.getColumnModel().getColumn(0).setPreferredWidth(100);
+                requests_table.getColumnModel().getColumn(1).setResizable(false);
+                requests_table.getColumnModel().getColumn(1).setPreferredWidth(300);
+                requests_table.getColumnModel().getColumn(2).setResizable(false);
+                requests_table.getColumnModel().getColumn(2).setPreferredWidth(500);
+                requests_table.getColumnModel().getColumn(3).setResizable(false);
+                requests_table.getColumnModel().getColumn(3).setPreferredWidth(300);
+            }
+
+            la_admin.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+            la_admin.setText("LA Administration:");
+
+            la_name.setText("Name");
+
+            la_edit.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+            la_edit.setText("Delete LA:");
+
+            add_la.setText("Add LA");
+
+            la_create.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+            la_create.setText("Add new LA:");
+
+
+            delete_la.setText("Delete LA");
+
+            javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
+            jPanel17.setLayout(jPanel17Layout);
+            jPanel17Layout.setHorizontalGroup(
+                jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel17Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(user_scroll)
+                        .addComponent(uadmin)
+                        .addGroup(jPanel17Layout.createSequentialGroup()
+                            .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(la_reqs)
+                                .addComponent(requests_scroll, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(45, 45, 45)
+                            .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel17Layout.createSequentialGroup()
+                                    .addComponent(la_name, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(user_box, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(add_la, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel17Layout.createSequentialGroup()
+                                    .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(la_edit)
+                                        .addComponent(la_admin)
+                                        .addComponent(la_create))
+                                    .addGap(0, 0, Short.MAX_VALUE))
+                                .addGroup(jPanel17Layout.createSequentialGroup()
+                                    .addComponent(la_box, javax.swing.GroupLayout.PREFERRED_SIZE, 370, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                                    .addComponent(delete_la, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addContainerGap())
+            );
+            jPanel17Layout.setVerticalGroup(
+                jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel17Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(uadmin)
+                    .addGap(18, 18, 18)
+                    .addComponent(user_scroll, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(18, 18, 18)
+                    .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(la_reqs)
+                        .addComponent(la_admin))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(requests_scroll, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel17Layout.createSequentialGroup()
+                            .addComponent(la_create, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(la_name, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(user_box, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(add_la, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(18, 18, 18)
+                            .addComponent(la_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(la_box, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(delete_la, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addContainerGap(21, Short.MAX_VALUE))
+            );
+        }
+        else
+        {
+            JLabel labela = new JLabel();
+            
+            labela.setFont(new java.awt.Font("Ubuntu Light", 0, 18)); // NOI18N
+            labela.setForeground(java.awt.Color.gray);
+            labela.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+            labela.setText("<html>Unfortunately you have no rights to access this section.<br>Administrators only!</html>");
+            
+            javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
+            jPanel17.setLayout(jPanel17Layout);
+            jPanel17Layout.setHorizontalGroup(
+                jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(labela, javax.swing.GroupLayout.DEFAULT_SIZE, 1320, Short.MAX_VALUE)
+            );
+            jPanel17Layout.setVerticalGroup(
+                jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel17Layout.createSequentialGroup()
+                    .addGap(275, 275, 275)
+                    .addComponent(labela, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(342, Short.MAX_VALUE))
+            );
         }
         
         
@@ -555,7 +866,6 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jLabel21 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
         jPanel17 = new javax.swing.JPanel();
-        jLabel24 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -581,7 +891,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1325, Short.MAX_VALUE)
+            .addGap(0, 1330, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -792,7 +1102,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, 490, Short.MAX_VALUE))
-                        .addGap(0, 223, Short.MAX_VALUE))
+                        .addGap(0, 228, Short.MAX_VALUE))
                     .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -827,7 +1137,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 1302, Short.MAX_VALUE)
+            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 1325, Short.MAX_VALUE)
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -860,7 +1170,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPanel15.setLayout(jPanel15Layout);
         jPanel15Layout.setHorizontalGroup(
             jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1302, Short.MAX_VALUE)
+            .addGap(0, 1325, Short.MAX_VALUE)
         );
         jPanel15Layout.setVerticalGroup(
             jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -878,7 +1188,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPanel21.setLayout(jPanel21Layout);
         jPanel21Layout.setHorizontalGroup(
             jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 1302, Short.MAX_VALUE)
+            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 1325, Short.MAX_VALUE)
         );
         jPanel21Layout.setVerticalGroup(
             jPanel21Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -911,7 +1221,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPanel16.setLayout(jPanel16Layout);
         jPanel16Layout.setHorizontalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1302, Short.MAX_VALUE)
+            .addGap(0, 1325, Short.MAX_VALUE)
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -929,7 +1239,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         jPanel22.setLayout(jPanel22Layout);
         jPanel22Layout.setHorizontalGroup(
             jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 1302, Short.MAX_VALUE)
+            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, 1325, Short.MAX_VALUE)
         );
         jPanel22Layout.setVerticalGroup(
             jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1052,7 +1362,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                             .addComponent(jTextField8)
                             .addComponent(jPasswordField4)
                             .addComponent(jPasswordField3, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(698, Short.MAX_VALUE))
+                .addContainerGap(703, Short.MAX_VALUE))
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1085,30 +1395,22 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                 .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jPasswordField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel22))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 222, Short.MAX_VALUE)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(21, 21, 21))
         );
 
         jTabbedPane5.addTab("tab1", jPanel10);
 
-        jLabel24.setFont(new java.awt.Font("Ubuntu Light", 0, 18)); // NOI18N
-        jLabel24.setForeground(java.awt.Color.gray);
-        jLabel24.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel24.setText("<html>Unfortunately you have no rights to access this section.<br>Administrators only!</html>");
-
         javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
         jPanel17.setLayout(jPanel17Layout);
         jPanel17Layout.setHorizontalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel24, javax.swing.GroupLayout.DEFAULT_SIZE, 1302, Short.MAX_VALUE)
+            .addGap(0, 1325, Short.MAX_VALUE)
         );
         jPanel17Layout.setVerticalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel17Layout.createSequentialGroup()
-                .addGap(268, 268, 268)
-                .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(0, 661, Short.MAX_VALUE)
         );
 
         jTabbedPane5.addTab("tab2", jPanel17);
@@ -1968,8 +2270,137 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         
         subpanel.add(butt);
         
+        butt.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                FileWriter file = null;
+                try {
+                    File file1 = new File("index.html");
+                    
+                    file1.createNewFile();
+                    
+                    file = new FileWriter(file1);
+                } catch (IOException ex) {
+                    Logger.getLogger(OADTurkUserUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if(file == null){
+                    System.out.println("CANNOT OPEN THE FILE SPECIFIED !");
+                }
+                UserInfo usr = session.manager.users.get(session.id);
+                PrintWriter pw = new PrintWriter(file);
+                pw.print("<!DOCTYPE html>\n" +
+                            "<html lang=\"en\">\n" +
+                            "<head>\n" +
+                            "  <title>OADTurk Results</title>\n" +
+                            "  <meta charset=\"utf-8\">\n" +
+                            "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" +
+                            "  <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css\">\n" +
+                            "  <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js\"></script>\n" +
+                            "  <script src=\"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js\"></script>\n" +
+                            "  <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js\"></script>\n" +
+                            "  <style>\n" +
+                            "  .btn-facebook {\n" +
+                            "	color: #fff;\n" +
+                            "	background-color: #4C67A1;\n" +
+                            "}\n" +
+                            ".btn-facebook:hover {\n" +
+                            "	color: #fff;\n" +
+                            "	background-color: #405D9B;\n" +
+                            "}\n" +
+                            ".btn-facebook:focus {\n" +
+                           "	color: #fff;\n" +
+                            "}</style></head>\n" +
+                            "<body>\n" +
+                            "\n" +
+                            "<div class=\"container\" style=\"margin-top:30px;\">\n" +
+                            "  <h2>Your OADTurk results</h2>\n" +
+                            "  <p>An open system for Learning Aplications.</p>" + 
+                            "<p>"+usr.name+ " (" +session.getLevelText()+ ")</p>");
+                
+                
+                pw.print("<table class=\"table\">\n" +
+                            "    <thead class=\"thead-dark\">\n" +
+                            "      <tr>\n" +
+                            "        <th>ID</th>\n" +
+                            "        <th>Exam</th>\n" +
+                            "        <th>Date</th>\n" +
+                            "        <th>Question</th>\n" +
+                            "        <th>Achieved Points</th>\n" +
+                            "        <th>Max Points</th>\n" +
+                            "        <th>Note</th>\n" +
+                            "        <th>Share</th>\n" +
+                            "      </tr>\n" +
+                            "    </thead>\n" +
+                            "    <tbody>\n");
+                
+                //content of the table here
+                
+                int num = usr.finished_exams.size();
+                
+                for (int i=0; i < num; i++)
+                {
+                    ExamResults er = usr.finished_exams.get(i);
+                    Exam ex = session.manager.la.get(er.laid).exam.get(er.exam_id);
+                    
+                    int id = er.exam_id;
+                    String name = ex.name;
+                    
+                    DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+                    Calendar c = ex.date;
+                    
+                    int questions = ex.num_of_questions;
+                    float ach_points = er.points;
+                    
+                    float points = er.points;
+                    float max_points = ex.points_per_question * ex.num_of_questions;
+                    
+                    float percentage = points/max_points * 100;
+
+                    String note = "";
+
+                    if(percentage < 50)
+                      note = "Not Sufficient (5)";
+                    else if(percentage >= 50 && percentage < 62)
+                        note = "Sufficient (4)";
+                    else if(percentage >= 62 && percentage < 75)
+                        note = "Good (3)";
+                    else if(percentage >= 75 && percentage < 87)
+                        note = "Very Good (2)";
+                    else if(percentage >= 87)
+                       note = "Excellent (1)";
+                    
+                    pw.print("<tr>\n" +
+                            "        <td class=\"align-middle\">"+id+"</td>\n" +
+                            "        <td class=\"align-middle\">"+name+"</td>\n" +
+                            "        <td class=\"align-middle\">"+dateFormat.format(c.getTime())+"</td>\n" +
+                            "        <td class=\"align-middle\">"+questions+"</td>\n" +
+                            "        <td class=\"align-middle\">"+ach_points+"</td>\n" +
+                            "        <td class=\"align-middle\">"+max_points+"</td>\n" +
+                            "        <td class=\"align-middle\">"+note+"</td>\n" +
+                                    "<td class=\"align-middle\"><a href=\"https://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://www.example.com&p[images][0]=&p[title]=Title%20Goes%20Here&p[summary]=Description%20goes%20here!\" target=\"_blank\" onclick=\"window.open(this.href,'targetWindow','toolbar=no,location=0,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=250'); return false\"><button style=\"width:100%; margin-top:0px;\" type=\"button\" class=\"btn btn-facebook \"><i class=\"fa fa-facebook fa-2\"></i> Share on Facebook</button></a></td>"+
+                            "      </tr>");
+                    
+                    
+                    
+                }
+                
+                pw.print("</tbody>\n" +
+                            "  </table>\n" +
+                            "</div>\n" +
+                            "\n" +
+                            "</body>\n" +
+                            "</html>");    
+                pw.close();
+                File htmlFile = new File("index.html");
+                try {
+                    Desktop.getDesktop().browse(htmlFile.toURI());
+                } catch (IOException ex) {
+                    Logger.getLogger(OADTurkUserUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
         
-        JButton butt2 = new JButton();
+        
+        /*JButton butt2 = new JButton();
         butt2.setFocusPainted(false);
         butt2.setContentAreaFilled(false);
         butt2.setFont(new java.awt.Font("Ubuntu Light", 0, 14)); // NOI18N
@@ -1979,7 +2410,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         butt2.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.black));
         butt2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         
-        subpanel.add(butt2);
+        subpanel.add(butt2);*/
         
         jPanel16.add(subpanel, BorderLayout.AFTER_LAST_LINE);
     }
@@ -2095,7 +2526,8 @@ public class OADTurkUserUI extends javax.swing.JFrame {
             
             String n = fn + " " + sn;
             
-            session.manager.updateUserSettings(session.id, u, n, fn, sn, m, p, session.id, session.manager.users.get(session.id).level);
+            UserInfo user = session.manager.users.get(session.id);
+            session.manager.updateUserSettings(session.id, u, n, fn, sn, m, p,  user.level, user.co_creator, user.tutor, user.creator_la, user.tutor_la, user.admin_notes);
             
             jLabel1.setText(session.manager.users.get(session.id).name + " (" + session.getLevelText() + ")");
             
@@ -2263,7 +2695,6 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -2304,14 +2735,14 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
     
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {                                      
-
-        if(manager.creator_applications.containsKey(session.id))
+        int appid = manager.applicationExists(session.id);
+        if( appid != -1)
         {
             int answer = JOptionPane.showConfirmDialog(rootPane, "You already applied to be a creator\nDo you want to withdraw your application?\n\n", "Creator application", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             if(answer == 0)
             {
-                manager.deleteCreatorApplication(session.id);
+                manager.deleteCreatorApplication(appid);
                 JOptionPane.showMessageDialog(rootPane, "You successfuly withdrawed your Creator application!");
             }
         }
@@ -2852,5 +3283,144 @@ class TutorButtonEditor extends DefaultCellEditor {
   @Override
   protected void fireEditingStopped() {
     super.fireEditingStopped();
+  }
+}
+
+
+class UsersButtonEditor extends DefaultCellEditor {
+  protected JButton button;
+
+  private String label;
+
+  private boolean isPushed;
+
+  private int us_id;
+  
+
+  public UsersButtonEditor(JCheckBox checkBox) {
+    super(checkBox);
+    button = new JButton();
+    //button.setOpaque(true);
+    button.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        fireEditingStopped();
+      }
+    });
+  }
+
+  public Component getTableCellEditorComponent(JTable table, Object value,
+      boolean isSelected, int row, int column) {
+     
+    label = (value == null) ? "" : value.toString();
+    button.setText(label);
+    isPushed = true;
+    us_id = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+    return button;
+  }
+
+  @Override
+  public Object getCellEditorValue() {
+    
+    if (isPushed) 
+    {
+         OADTurkUserEditUI user = new OADTurkUserEditUI(OADTurkUserUI.session, us_id);
+         user.setVisible(true);
+         
+    }
+    isPushed = false;
+    return new String(label);
+  }
+
+  @Override
+  public boolean stopCellEditing() {
+    isPushed = false;
+    return super.stopCellEditing();
+  }
+
+  @Override
+  protected void fireEditingStopped() {
+    super.fireEditingStopped();
+  }
+}
+
+
+class RequestsButtonEditor extends DefaultCellEditor {
+  protected JButton button;
+
+  private String label;
+
+  private boolean isPushed;
+  
+  private int req_id;
+  
+  public int rw;
+  
+  private boolean delete_cat = false;
+
+  public RequestsButtonEditor(JCheckBox checkBox) {
+    super(checkBox);
+    button = new JButton();
+    //button.setOpaque(true);
+    button.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        fireEditingStopped();
+      }
+    });
+  }
+
+  public Component getTableCellEditorComponent(JTable table, Object value,
+      boolean isSelected, int row, int column) {
+     
+    label = (value == null) ? "" : value.toString();
+    button.setText(label);
+    isPushed = true;
+    req_id = Integer.parseInt(table.getModel().getValueAt(row, 0).toString());
+    rw = row;
+    return button;
+  }
+
+  @Override
+  public Object getCellEditorValue() {
+    
+    if (isPushed) 
+    {
+        LearningApp lapp = OADTurkUserUI.manager.la.get(OADTurkUserUI.manager.users.get(OADTurkUserUI.session.id).creator_la);
+        
+        if(button.getText().equals("Delete"))
+        {
+            int answer = JOptionPane.showConfirmDialog(button, "Are you sure that you want to delete this request?\n", "Request deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                
+            if(answer == 0)
+            {
+                OADTurkUserUI.manager.creator_applications.remove(req_id);
+                JOptionPane.showMessageDialog(button, "You have successfully deleted this creator application!");
+                delete_cat = true;
+            }
+        }
+        
+        
+        
+    }
+    isPushed = false;
+    return new String(label);
+  }
+
+  @Override
+  public boolean stopCellEditing() {
+    isPushed = false;
+    return super.stopCellEditing();
+  }
+
+  @Override
+  protected void fireEditingStopped() {
+    super.fireEditingStopped();
+    
+    if(delete_cat)
+    {
+        OADTurkUserUI.reqs_model.removeRow(rw);
+        delete_cat = false;   
+    }
+    
+    
   }
 }

@@ -26,6 +26,7 @@ public class UserInfo {
     public int tutor_la = -1;
     public boolean co_creator = false;
     public boolean tutor = false;
+    public String admin_notes;
     
     public ArrayList<RegisteredExam> registered_exams = new ArrayList<>();
     public ArrayList<ExamResults> finished_exams = new ArrayList<>();

@@ -10,10 +10,11 @@ public class DataManager
     private int la_id = 0;
     private int user_id = 0;
     private int feedback_id = 0;
+    private int ca_id = 0;
         
     public HashMap<Integer, UserInfo> users = new HashMap<>();
     public HashMap<Integer, LearningApp> la = new HashMap<>();
-    public HashMap<Integer, String> creator_applications = new HashMap();
+    public HashMap<Integer, Application> creator_applications = new HashMap();
     public HashMap<Integer, Feedback> feedbacks = new HashMap();
     
     public DataManager()
@@ -232,7 +233,7 @@ public class DataManager
         return true;
     }
     
-    public boolean insertLA(String name)
+    public int insertLA(String name)
     {
         LearningApp new_la = new LearningApp(la_id, name);
         la.put(la_id, new_la);
@@ -241,12 +242,14 @@ public class DataManager
         // TODO: Insert into database
         
         la_id++;
-        return true;
+        return la_id - 1;
     }
     
     public boolean deleteLA(int id)
     {
         la.remove(id);
+        
+        // TODO: Remove user info
         
         
         // TODO: Delete from database
@@ -414,26 +417,48 @@ public class DataManager
         return true; 
     }
     
-    public boolean addCreatorApplication(int uid, String reason)
+    public int addCreatorApplication(int uid, String reason)
     {
-        creator_applications.put(uid, reason);
+        creator_applications.put(ca_id++, new Application(uid, reason));
         
         // TODO: Insert in database
         
-        return true;
+        return ca_id - 1;
     }
     
     public boolean deleteCreatorApplication(int uid)
     {
-        creator_applications.remove(uid);
+        
+        for(HashMap.Entry<Integer, Application> entry : creator_applications.entrySet())
+        {
+            if(entry.getValue().uid == uid)
+            {
+                 creator_applications.remove(entry.getKey());
+            }
+        }
+       
         
         // TODO: Delete from database
         
         return true;
     }
     
+    public int applicationExists(int uid)
+    {
+        
+        for(HashMap.Entry<Integer, Application> entry : creator_applications.entrySet())
+        {
+            if(entry.getValue().uid == uid)
+            {
+                 return entry.getKey();
+            }
+        }
+        
+        return -1;
+    }
     
-    public boolean updateUserSettings(int uid, String u, String n, String fn, String sn, String m, String pw, int i, int lvl)
+    
+    public boolean updateUserSettings(int uid, String u, String n, String fn, String sn, String m, String pw, int lvl, boolean co_creator, boolean tutor, int creator_la, int tutor_la, String note)
     {
         UserInfo user = users.get(uid);
         
@@ -443,8 +468,12 @@ public class DataManager
         user.surname = sn;
         user.mail = m;
         user.password = pw;
-        user.id = i;
         user.level = lvl;
+        user.co_creator = co_creator;
+        user.tutor = tutor;
+        user.creator_la = creator_la;
+        user.tutor_la = tutor_la;
+        user.admin_notes = note;
         
         // TODO: Update in database!  
         
@@ -518,6 +547,20 @@ public class DataManager
         }
         
         return false;
+    }
+    
+    public int userExistsAdmin(String name)
+    {
+        for(HashMap.Entry<Integer, UserInfo> entry : users.entrySet())
+        {
+            UserInfo user = entry.getValue();
+            
+            if(user.user.equals(name))
+                return entry.getKey();
+            
+        }
+        
+        return -1;
     }
     
     public boolean mailExists(String mail)
