@@ -54,29 +54,37 @@ public class OADTurkExamUI extends javax.swing.JFrame {
         
     }
     
-    public void loadRandomExam()
+     public void loadRandomExam()
     {
         LearningApp lapp = session.manager.la.get(laid);
         Exam exam = lapp.exam.get(exid);
         
-        HashMap<Integer, Integer> temp = exam.categories;
         while(true)
         {
-            ArrayList<Integer> keys = new ArrayList<Integer>(lapp.lu.keySet());
-            int randomIndex = new Random().nextInt(keys.size());
-            LearningUnit lunit = lapp.lu.get(randomIndex);
-
+            
+            ArrayList<Integer> cats = exam.categories;
+            int cat_index = new Random().nextInt(cats.size());
+            int cat_id = exam.categories.get(cat_index);
+            
+            
+            ArrayList<Integer> lus = new ArrayList<Integer>(lapp.lu.keySet());
+            
+            LearningUnit lunit;
+            int lu_index;
+            
+            while(true)
+            {
+                lu_index = new Random().nextInt(lus.size());
+                lunit = lapp.lu.get(lus.get(lu_index));
+                
+                if(lunit.cat_id == cat_id)
+                    break;
+            }
+           
             if(lunit.approved == 1)
             {
-                if(temp.containsKey(lunit.cat_id))
-                {
-                    if(temp.get(lunit.cat_id) == 0)
-                        continue;
-                    
-                    questions.add(lunit.cat_id);
-                    
-                    temp.replace(lunit.cat_id, temp.get(lunit.cat_id) - 1);
-                }
+                 if(!questions.contains(lus.get(lu_index)))
+                    questions.add(lus.get(lu_index));
             }
             
             if(questions.size() == exam.num_of_questions)

@@ -1,6 +1,8 @@
 
 package my.oadturk;
 
+import java.util.HashMap;
+
 
 public class LearningUnit 
 {
@@ -35,6 +37,9 @@ public class LearningUnit
     public int approved;
     
     public int cat_id;
+    
+    private int eval_id = 0;
+    public HashMap<Integer, Evaluation> evaluations = new HashMap();
     
     public LearningUnit(String q, String d, int dt, String as1, int as1t,
                String as2, int as2t, String as3, int as3t, String as4, int as4t,
@@ -96,6 +101,18 @@ public class LearningUnit
         approved = app;
         
         cat_id = cat;
+    }
+    
+     public int addEvaluation(Evaluation eval)
+    {
+        evaluations.put(eval_id++, eval);
+        
+        return eval_id - 1;
+    }
+    
+    public void deleteEvaluationl(int id)
+    {
+        evaluations.remove(id);
     }
     
     

@@ -2,7 +2,6 @@ package my.oadturk;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 
 public class Exam 
 {
@@ -16,14 +15,14 @@ public class Exam
     public int code;
     public int type;
     public int num_of_questions;
-    public int points_per_question;
+    public float points_per_question;
     
     // Saves ID - Number of questions for category
-    public HashMap<Integer, Integer> categories = new HashMap<>();
+    public ArrayList<Integer> categories = new ArrayList<>();
     // Saves LU Ids
     public ArrayList<Integer> lus = new ArrayList<>();
     
-    public Exam(String n, Calendar d, Calendar u, int t, int num, int pts)
+    public Exam(String n, Calendar d, Calendar u, int t, int num, float pts, int cd)
     {
         name = n;
         date = d;
@@ -31,11 +30,12 @@ public class Exam
         type = t;
         num_of_questions = num;
         points_per_question = pts;
+        code = cd;
     }
     
-    public void insertExamCategory(int cat, int num)
+    public void insertExamCategory(int cat)
     {
-        categories.put(cat, num);
+        categories.add(cat);
     }
     
     public void insertExamQuestion(int q)
@@ -53,7 +53,7 @@ public class Exam
         lus.remove(lus.indexOf(q));
     }
     
-    public void editExam(String n, Calendar d, Calendar u, int t, int num, int pts)
+    public void editExam(String n, Calendar d, Calendar u, int t, int num, float pts, int cd)
     {
         name = n;
         date = d;
@@ -61,5 +61,6 @@ public class Exam
         type = t;
         num_of_questions = num;
         points_per_question = pts;
+        code = cd;
     }
 }

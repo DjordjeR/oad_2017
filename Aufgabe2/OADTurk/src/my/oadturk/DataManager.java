@@ -24,6 +24,13 @@ public class DataManager
         loadLUs();
         loadExams();
         
+        //loadEvaluations();
+        //loadMaterials();
+        //loadFeedbacks();
+        //loadCApplications();
+        //loadFinishedExams();
+        //loadRegisteredExams();
+        
     }
     
     public boolean loadUsers()
@@ -163,6 +170,7 @@ public class DataManager
         insertLU(getLAId("OAD"), q, d, dt, as1, as1t, as2, as2t, as3, as3t, as4, 
                 as4t, 2, 1, 1, a1c, a2c, a3c, a4c);
         
+           
         // TODO: Load from database
         
         return true;
@@ -177,7 +185,7 @@ public class DataManager
         Calendar unt = Calendar.getInstance();
         unt.set(2017, 11, 31, 23, 59, 00);
         
-        int exid = insertExam(getLAId("OAD"), "Exam1", dat, unt, 1, 4, 1);
+        int exid = insertExam(getLAId("OAD"), "Exam1", dat, unt, 1, 4, 1, 0);
         
         ArrayList<Integer> questions = new ArrayList<>();
         questions.add(0);
@@ -194,7 +202,7 @@ public class DataManager
         unt = Calendar.getInstance();
         unt.set(2017, 11, 31, 23, 59, 00);
         
-        exid = insertExam(getLAId("OAD"), "Exam2", dat, unt, 1, 4, 1);
+        exid = insertExam(getLAId("OAD"), "Exam2", dat, unt, 1, 4, 1, 0);
            
         insertExamQuestions(getLAId("OAD"), exid, questions);
         
@@ -204,7 +212,18 @@ public class DataManager
         unt = Calendar.getInstance();
         unt.set(2017, 9, 31, 23, 59, 00);
         
-        exid = insertExam(getLAId("OAD"), "Exam3", dat, unt, 1, 4, 1);
+        exid = insertExam(getLAId("OAD"), "Exam3", dat, unt, 1, 4, 1, 0);
+           
+        insertExamQuestions(getLAId("OAD"), exid, questions);
+        
+        
+        dat = Calendar.getInstance();
+        dat.set(2018, 9, 25, 23, 59, 00);
+        
+        unt = Calendar.getInstance();
+        unt.set(2018, 9, 31, 23, 59, 00);
+        
+        exid = insertExam(getLAId("OAD"), "Exam4", dat, unt, 1, 4, 1, 0);
            
         insertExamQuestions(getLAId("OAD"), exid, questions);
         
@@ -274,13 +293,35 @@ public class DataManager
         return true;
     }
     
-    public boolean editLU(int laid, int luid, int app, int cat)
+    public boolean editLU(int laid, int luid, String q, String d, int dt, String as1, 
+                int as1t, String as2, int as2t, String as3, int as3t, 
+                String as4, int as4t, int app, int cat,
+                 boolean a1c, boolean a2c, boolean a3c, boolean a4c)
     {
         LearningApp lapp = la.get(laid);
         LearningUnit lunit = lapp.lu.get(luid);
         
         lunit.cat_id = cat;
         lunit.approved = app;
+        
+        lunit.question = q;
+        lunit.desc = d;
+        lunit.desc_type = dt;
+        
+        lunit.a1 = as1;
+        lunit.a2 = as2;
+        lunit.a3 = as3;
+        lunit.a4 = as4;
+        
+        lunit.a1_type = as1t;
+        lunit.a2_type = as2t;
+        lunit.a3_type = as3t;
+        lunit.a4_type = as4t;
+        
+        lunit.a1_correct = a1c;
+        lunit.a2_correct = a2c;
+        lunit.a3_correct = a3c;
+        lunit.a4_correct = a4c;
         
         // TODO: Update in database
         
@@ -321,10 +362,10 @@ public class DataManager
     }
     
     
-    public int insertExam(int laid, String n, Calendar d, Calendar u, int t, int num, int pts)
+    public int insertExam(int laid, String n, Calendar d, Calendar u, int t, int num, float pts, int cd)
     {
         LearningApp lapp = la.get(laid);
-        Exam ex = new Exam(n, d, u, t, num, pts);
+        Exam ex = new Exam(n, d, u, t, num, pts, cd);
         
         
         // TODO: Insert into database
@@ -338,7 +379,7 @@ public class DataManager
         for(Integer temp : list) 
         {
             lapp.exam.get(exid).insertExamQuestion(temp);
-	}
+        }
         
         
         // TODO: Insert in database
@@ -348,15 +389,14 @@ public class DataManager
     }
     
     
-    public boolean insertExamCategories(int laid, int exid, HashMap<Integer, Integer> list)
+    public boolean insertExamCategories(int laid, int exid, ArrayList<Integer> list)
     {
         LearningApp lapp = la.get(laid);
-        for(HashMap.Entry<Integer, Integer> entry : list.entrySet()) 
+        for(int i = 0; i < list.size(); i++) 
         {
-            lapp.exam.get(exid).insertExamCategory(entry.getKey(), entry.getValue());
-	}
-        
-        
+            lapp.exam.get(exid).insertExamCategory(list.get(i));
+        }
+                
         // TODO: Insert in database
         
         
@@ -701,5 +741,36 @@ public class DataManager
         // TODO: Remove from database
         
         return true;
+    }
+    
+    
+    public int addNewEvaluation(int laid, int luid, int u, int he, int ha, int q, int a, int e)
+    {
+        
+        int id = la.get(laid).lu.get(luid).addEvaluation(new Evaluation(u, he, ha, q, a, e));
+        
+        // TODO: Add to database
+        return id;
+    }
+    
+    public boolean removeEvaluation(int laid, int luid, int id)
+    {
+        
+        la.get(laid).lu.get(luid).deleteEvaluationl(id);
+        
+        // TODO: Remove from database
+        
+        return true;
+    }
+    
+    public boolean alreadyEvaluated(int laid, int luid, int uid)
+    {
+        for(HashMap.Entry<Integer, Evaluation> entry : la.get(laid).lu.get(luid).evaluations.entrySet())
+        {
+            if(entry.getValue().uid == uid)
+                return true;
+        }
+        
+        return false;
     }
 }

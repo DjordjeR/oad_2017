@@ -13,10 +13,12 @@ public class LearningApp
     private int cat_id = 0;
     private int mat_id = 0;
     
+    
     public HashMap<Integer, LearningUnit> lu = new HashMap<>();
     public HashMap<Integer, Exam> exam = new HashMap<>();
     public HashMap<Integer, String> categories = new HashMap<>();
     public HashMap<Integer, Material> materials = new HashMap();
+    
     
     public LearningApp(int i, String s)
     {
@@ -35,7 +37,7 @@ public class LearningApp
     {
         materials.remove(id);
     }
-    
+        
     public int addLearningUnit(LearningUnit lunit)
     {
         lu.put(lu_id++, lunit);
