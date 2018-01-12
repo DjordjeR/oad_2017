@@ -8,15 +8,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 public class DataManager 
-{
-    private int la_id = 1;
-    private int feedback_id = 1;
-    private int ca_id = 1;
-        
+{       
     public HashMap<Integer, UserInfo> users = new HashMap<>();
     public HashMap<Integer, LearningApp> la = new HashMap<>();
     public HashMap<Integer, Application> creator_applications = new HashMap();
@@ -33,21 +28,20 @@ public class DataManager
         loadCats();
         loadLUs();
         loadExams();
-        
-        //loadEvaluations();
-        //loadMaterials();
-        //loadFeedbacks();
-        //loadCApplications();
+        loadMaterials();
+        loadFeedbacks();
+        loadCApplications();
+     
         //loadFinishedExams();
         //loadRegisteredExams();
+        //loadEvaluations();
         
     }
     
     public static void connect() {
         try {
-            // db parameters
+
             String url = "jdbc:sqlite:oadturk.db";
-            // create a connection to the database
             conn = DriverManager.getConnection(url);
             
             System.out.println("Connection to SQLite has been established.");
@@ -77,12 +71,12 @@ public class DataManager
                 String n = fn + " " + sn;
                 
                 UserInfo newUser = new UserInfo(u, n, fn, sn, m, pw, uid, lvl);
-                                
                 newUser.admin_notes = rs.getString("admin_notes");
                 newUser.creator_la = rs.getInt("creator_la");
                 newUser.tutor_la = rs.getInt("tutor_la");
                 newUser.tutor = rs.getInt("tutor") == 1;
                 newUser.co_creator = rs.getInt("co_creator") == 1;
+                
                 users.put(uid, newUser);
             }
             
@@ -90,138 +84,187 @@ public class DataManager
             System.out.println(e.getMessage());
         }
         
-        setCoCreator(3, getLAId("OAD"));
-        setTutor(2, getLAId("OAD"));
-        
-        
+                
          // TODO: Load from database
          
-        users.get(1).finished_exams.add(new ExamResults(0, 2, 3));
-        users.get(1).registered_exams.add(new RegisteredExam(0, 0));
+        users.get(1).finished_exams.add(new ExamResults(1, 2, 3));
+        users.get(1).registered_exams.add(new RegisteredExam(1, 3));
+       
                   
         return true;
     }
     
     public boolean loadLAs()
     {
-        insertLA("OAD");
-        insertLA("SWP");
+        String sql = "SELECT * FROM LearningApp";
         
-        // TODO: Load from database
-        
+        try{
+            
+            Statement stmt  = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                String name = rs.getString("name");
+                int id = rs.getInt("ID");
+                
+                
+                la.put(id, new LearningApp(id, name));
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+                
         return true;
     }
     
     public boolean loadCats()
     {
-        insertCat(getLAId("OAD"), "Category 1");
-        insertCat(getLAId("OAD"), "Category 2");
+        String sql = "SELECT * FROM Categories";
         
-        // TODO: Load from database
+        try{
+            
+            Statement stmt  = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                String name = rs.getString("name");
+                int id = rs.getInt("ID");
+                int laid = rs.getInt("laid");
+                
+                la.get(laid).categories.put(id, name);
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         
+        return true;
+    }
+    
+    public boolean loadMaterials()
+    {
+        String sql = "SELECT * FROM Materials";
+        
+        try{
+            
+            Statement stmt  = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                String text = rs.getString("text");
+                int id = rs.getInt("ID");
+                int laid = rs.getInt("la_id");
+                String type = rs.getString("type");
+                int added_by = rs.getInt("added_by");                      
+                
+                la.get(laid).materials.put(id, new Material(added_by, type, text));
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return true;
+    }
+    
+    public boolean loadCApplications()
+    {
+        String sql = "SELECT * FROM Application";
+        
+        try{
+            
+            Statement stmt  = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                String text = rs.getString("text");
+                int id = rs.getInt("ID");
+                int uid = rs.getInt("uid");                   
+                
+                creator_applications.put(id, new Application(uid, text));
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        
+        return true;
+    }
+    
+    public boolean loadFeedbacks()
+    {
+        String sql = "SELECT * FROM Feedback";
+        
+        try{
+            
+            Statement stmt  = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                String feedback = rs.getString("feedback");
+                int id = rs.getInt("ID");
+                int uid = rs.getInt("uid");
+                int tutor_id = rs.getInt("tutor_id");
+                int laid = rs.getInt("laid");
+                int ex_id = rs.getInt("ex_id");
+                
+                feedbacks.put(id, new Feedback(uid, tutor_id, laid, ex_id, feedback));
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         
         return true;
     }
     
     private boolean loadLUs()
     {
-        String q = "Which of the following instantiations corresponds to the UML model?";
-        String d = "images/desc1.png";
-        int dt = 2;
+                       
+        String sql = "SELECT * FROM LearningUnit";
         
-        String as1 = "images/a1-1.png";
-        int as1t = 2;
-        boolean a1c = false;
-        
-        String as2 = "images/a1-2.png";
-        int as2t = 2;
-        boolean a2c = true;  
-        
-        String as3 = "images/a1-3.png";
-        int as3t = 2;
-        boolean a3c = false;  
-        
-        String as4 = "";
-        int as4t = 0;
-        boolean a4c = false;  
-        
-        insertLU(getLAId("OAD"), q, d, dt, as1, as1t, as2, as2t, as3, as3t, as4, 
-                as4t, 1, 1, 0, a1c, a2c, a3c, a4c);
-        
-        q = "Which of the following texts describes the UML model?";
-        d = "images/desc2.png";
-        dt = 2;
-        
-        as1 = "Each project has at least two assigned employees.";
-        as1t = 1;
-        a1c = false;
-        
-        as2 = "The maximum number of projects that can be assigned to an employee is 2,\n" +
-              "the minimum is 1. Each project has an assigned employee.";
-        as2t = 1;
-        a2c = true;  
-        
-        as3 = "";
-        as3t = 0;
-        a3c = false;  
-        
-        as4 = "";
-        as4t = 0;
-        a4c = false;  
-        
-        insertLU(getLAId("OAD"), q, d, dt, as1, as1t, as2, as2t, as3, as3t, as4, 
-                as4t, 1, 1, 0, a1c, a2c, a3c, a4c);
-        
-        
-        q = "Which of the following UML models reflects the domain description?";
-        d = "Each project has exactly two assigned employees, each employee works for exactly one project.";
-        dt = 1;
-        
-        as1 = "images/a3-1.png";
-        as1t = 2;
-        a1c = false;
-        
-        as2 = "images/a3-2.png";
-        as2t = 2;
-        a2c = false;  
-        
-        as3 = "images/a3-3.png";
-        as3t = 2;
-        a3c = true;  
-        
-        as4 = "";
-        as4t = 0;
-        a4c = false;  
-        
-        insertLU(getLAId("OAD"), q, d, dt, as1, as1t, as2, as2t, as3, as3t, as4, 
-                as4t, 1, 1, 0, a1c, a2c, a3c, a4c);
-        
-        
-        q = "What is a „conceptual class diagram“?";
-        d = "";
-        dt = 0;
-        
-        as1 = "UML class diagram used in the context of the analysis phase of a project.";
-        as1t = 1;
-        a1c = true;
-        
-        as2 = "A diagram that describes the software system‘s component structure?";
-        as2t = 1;
-        a2c = false;  
-        
-        as3 = "";
-        as3t = 0;
-        a3c = false;  
-        
-        as4 = "";
-        as4t = 0;
-        a4c = false;  
-        
-        insertLU(getLAId("OAD"), q, d, dt, as1, as1t, as2, as2t, as3, as3t, as4, 
-                as4t, 2, 1, 1, a1c, a2c, a3c, a4c);
-        
-           
-        // TODO: Load from database
+        try{
+            
+            Statement stmt  = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                int id = rs.getInt("ID");
+                int laid = rs.getInt("la_id");
+                
+                String q = rs.getString("question");
+                String d = rs.getString("desc");
+                int dt = rs.getInt("desc_type");
+                
+                int created_by = rs.getInt("created_by");
+                int app = rs.getInt("approved");
+                int cat_id = rs.getInt("cat_id");
+                
+                String a1 = rs.getString("a1");
+                String a2 = rs.getString("a2");
+                String a3 = rs.getString("a3");
+                String a4 = rs.getString("a4");
+                
+                int a1t = rs.getInt("a1_type");
+                int a2t = rs.getInt("a2_type");
+                int a3t = rs.getInt("a3_type");
+                int a4t = rs.getInt("a4_type");
+                
+                boolean a1c = rs.getInt("a1_correct") == 1;
+                boolean a2c = rs.getInt("a2_correct") == 1;
+                boolean a3c = rs.getInt("a3_correct") == 1;
+                boolean a4c = rs.getInt("a4_correct") == 1;
+                
+                
+                LearningUnit lunit = new LearningUnit(q, d, dt, a1, a1t, a2, a2t, 
+                a3, a3t, a4, a4t, created_by, app, cat_id, a1c, a2c, a3c, a4c);
+                la.get(laid).lu.put(id, lunit);
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         
         return true;
     }
@@ -257,10 +300,10 @@ public class DataManager
         insertExamQuestions(getLAId("OAD"), exid, questions);
         
         dat = Calendar.getInstance();
-        dat.set(2017, 9, 25, 23, 59, 00);
+        dat.set(2018, 9, 25, 23, 59, 00);
         
         unt = Calendar.getInstance();
-        unt.set(2017, 9, 31, 23, 59, 00);
+        unt.set(2018, 9, 31, 23, 59, 00);
         
         exid = insertExam(getLAId("OAD"), "Exam3", dat, unt, 1, 4, 1, 0);
            
@@ -284,24 +327,84 @@ public class DataManager
     
     public int insertLA(String name)
     {
+        int la_id = -1;        
+        try {
+        String generatedColumns[] = { "ID" };
+        
+        String sql = "INSERT INTO LearningApp (name)" +
+                            "VALUES ('" + name + "');";
+        
+        PreparedStatement stmtInsert = conn.prepareStatement(sql, generatedColumns);
+        stmtInsert.executeUpdate();
+        
+        ResultSet rs = stmtInsert.getGeneratedKeys();
+        
+        
+        if (rs.next()) {
+            la_id = (int) rs.getLong(1);
+        }
+        
+        if(la_id == -1)
+            return -1;
+        
         LearningApp new_la = new LearningApp(la_id, name);
         la.put(la_id, new_la);
         
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
         
-        // TODO: Insert into database
-        
-        la_id++;
-        return la_id - 1;
+        return la_id;
     }
     
     public boolean deleteLA(int id)
     {
-        la.remove(id);
-        
-        // TODO: Remove user info
-        
-        
-        // TODO: Delete from database
+        try{
+            
+            String sql = "DELETE FROM LearningApp WHERE ID = '" + id + "';";
+            
+            Statement stmt  = conn.createStatement();
+            stmt.executeUpdate(sql);
+            
+            for(HashMap.Entry<Integer, UserInfo> entry : users.entrySet())
+            {
+                if(entry.getValue().creator_la == id)
+                {
+                    setCoCreator(entry.getKey(), -1);
+                }
+                
+                if(entry.getValue().tutor_la == id)
+                {
+                    setTutor(entry.getKey(), -1);
+                }
+            }
+            
+            for(HashMap.Entry<Integer, LearningUnit> entry : la.get(id).lu.entrySet())
+            {
+                deleteLU(id, entry.getKey());
+            }
+            
+             for(HashMap.Entry<Integer, String> entry : la.get(id).categories.entrySet())
+            {
+                deleteCat(id, entry.getKey());
+            }
+             
+            for(HashMap.Entry<Integer, Material> entry : la.get(id).materials.entrySet())
+            {
+                removeMaterial(id, entry.getKey());
+            }
+            
+            for(HashMap.Entry<Integer, Exam> entry : la.get(id).exam.entrySet())
+            {
+                deleteExam(id, entry.getKey());
+            }
+            
+                
+            la.remove(id);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         
         return true; 
     }
@@ -334,13 +437,51 @@ public class DataManager
                 String as4, int as4t, int creator, int app, int cat,
                  boolean a1c, boolean a2c, boolean a3c, boolean a4c)
     {
+        try {
+        
+        int a1cor = 0;
+        int a2cor = 0;
+        int a3cor = 0;
+        int a4cor = 0;
+        
+        if(a1c)
+            a1cor = 1;
+            
+        if(a2c)
+            a2cor = 1;
+        
+        if(a3c)
+            a3cor = 1;
+        
+        if(a4c)
+            a4cor = 1;
+        
+        String generatedColumns[] = { "ID" };
+        
+        String sql = "INSERT INTO LearningUnit (la_id, question, desc, desc_type, a1, a2, a3, a4, a1_type, a2_type, a3_type, a4_type, a1_correct, a2_correct, a3_correct, a4_correct, created_by, approved, cat_id)" +
+                            "VALUES ('" + laid + "', '" + q + "', '" + d + "', '" + dt + "', '" + as1 + "', '" + as2 + "', '" + as3 + "', '" + as4 + "', '" + as1t + "', '" + as2t + "', '" + as3t + "', '" + as4t + "', '" + a1cor + "', '" + a2cor + "', '" + a3cor + "', '" + a4cor + "', '" + creator + "', '" + app + "', '" + cat + "');";
+        
+        PreparedStatement stmtInsert = conn.prepareStatement(sql, generatedColumns);
+        stmtInsert.executeUpdate();
+        
+        ResultSet rs = stmtInsert.getGeneratedKeys();
+        
+        int luid = -1;
+        if (rs.next()) {
+            luid = (int) rs.getLong(1);
+        }
+        
+        if(luid == -1)
+            return false;
+        
         LearningUnit lunit = new LearningUnit(q, d, dt, as1, as1t, as2, as2t, 
                 as3, as3t, as4, as4t, creator, app, cat, a1c, a2c, a3c, a4c);
+        la.get(laid).lu.put(luid, lunit);
         
-        LearningApp lapp = la.get(laid);
-        lapp.addLearningUnit(lunit);
-        
-        // TODO: Insert into database
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
         
         return true;
     }
@@ -375,42 +516,167 @@ public class DataManager
         lunit.a3_correct = a3c;
         lunit.a4_correct = a4c;
         
-        // TODO: Update in database
+        int a1cor = 0;
+        int a2cor = 0;
+        int a3cor = 0;
+        int a4cor = 0;
+        
+        if(a1c)
+            a1cor = 1;
+        
+        if(a2c)
+            a2cor = 1;
+        
+        if(a3c)
+            a3cor = 1;
+        
+        if(a4c)
+            a4cor = 1;
+        
+        try {
+            
+            String sql = "UPDATE LearningUnit SET question = '" + q + "', desc = '" + d + "', desc_type = '" + dt +"', a1 = '" + as1 +
+                                "', a1_type = '" + as1t + "', a2 = '" + as2 + "', a2_type = '" + as2t + "', a3 = '" + as3 + "', a3_type = '" + as3t +
+                                "', a4 = '" + as4 + "', a4_type = '" + as4t + "', approved = '" + app + "', cat_id = '" + cat + "', a1_correct = '" + a1cor +
+                                "', a2_correct = '" + a2cor + "', a3_correct = '" + a3cor+ "', a4_correct = '" + a4cor + "' WHERE ID = '" + luid + "' AND la_id = '" + laid + "';";
+            
+             PreparedStatement stmtInsert = conn.prepareStatement(sql);
+             stmtInsert.executeUpdate();
+             
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
         
         return true;
     }
     
     public boolean deleteLU(int laid, int luid)
     {
-        LearningApp lapp = la.get(laid);
-        lapp.deleteLearningUnit(luid);
-        
-        removeFromExams(laid, luid);
-        
-        // TODO: Delete from database
+         try {
+            
+            String sql = "DELETE FROM LearningUnit WHERE ID = '" + luid + "' AND la_id = '" + laid + "';";
+            
+             PreparedStatement stmtInsert = conn.prepareStatement(sql);
+             stmtInsert.executeUpdate();
+             
+           
+            la.get(laid).lu.remove(luid);
+            removeFromExams(laid, luid);
+             
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
         
         return true;
     }
     
     public int insertCat(int laid, String name)
     {
-        LearningApp lapp = la.get(laid);
+        int cat_id = -1;        
+        try {
+        String generatedColumns[] = { "ID" };
         
+        String sql = "INSERT INTO Categories (name, laid)" +
+                            "VALUES ('" + name + "', '" + laid + "');";
         
-        // TODO: Insert into database
+        PreparedStatement stmtInsert = conn.prepareStatement(sql, generatedColumns);
+        stmtInsert.executeUpdate();
         
-        return lapp.addCategory(name);
+        ResultSet rs = stmtInsert.getGeneratedKeys();
+        
+        if (rs.next()) {
+            cat_id = (int) rs.getLong(1);
+        }
+        
+        if(cat_id == -1)
+            return -1;
+        
+        la.get(laid).categories.put(cat_id, name);
+        
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
+        
+        return cat_id;
     }
     
     public boolean deleteCat(int laid, int id)
     {
-        LearningApp lapp = la.get(laid);
-        lapp.deleteCategory(id);
-        
-        
-        // TODO: Delete from database
+         try{
+            
+            String sql = "DELETE FROM Categories WHERE ID = '" + id + "' AND laid = '" + laid + "';";
+            
+            Statement stmt  = conn.createStatement();
+            stmt.executeUpdate(sql);
+            
+           
+            for(HashMap.Entry<Integer, LearningUnit> entry : la.get(laid).lu.entrySet())
+            {
+                if(entry.getValue().cat_id == id)
+                {
+                    entry.getValue().cat_id = -1;
+                    
+                    String sql2= "UPDATE LearningUnit SET cat_id = -1 WHERE ID = '" + entry.getKey() + "' AND laid = '" + laid + "';";
+            
+                    Statement stmt2  = conn.createStatement();
+                    stmt2.executeUpdate(sql2);
+                }
+            }                      
+                
+            la.get(laid).categories.remove(id);
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         
         return true; 
+    }
+    
+    public boolean saveCat(int laid, int catid, String cat)
+    {
+        
+         try{
+            
+            String sql= "UPDATE Categories SET name = '" + cat + "' WHERE ID = '" + catid + "' AND laid = '" + laid + "';";
+            
+            Statement stmt  = conn.createStatement();
+            stmt.executeUpdate(sql);
+            
+           
+            la.get(laid).categories.replace(catid, cat);
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+                
+        return true;
+    }
+    
+    public boolean categoryExists(int laid, String name)
+    {
+        LearningApp lapp = la.get(laid);
+        
+        if(lapp.categories.containsValue(name))
+            return true;
+        
+        return false;
+    }
+    
+    public int getCategoryID(int laid, String name)
+    {
+        int id = -1;
+        LearningApp lapp = la.get(laid);
+        
+        for(HashMap.Entry<Integer, String> entry : lapp.categories.entrySet())
+        {
+            if(entry.getValue().equals(name))
+                return entry.getKey();
+        }
+        
+        return id;
     }
     
     
@@ -468,11 +734,34 @@ public class DataManager
     
     public int addCreatorApplication(int uid, String reason)
     {
-        creator_applications.put(ca_id++, new Application(uid, reason));
+        int ca_id = -1;
         
-        // TODO: Insert in database
+        try {
+        String generatedColumns[] = { "ID" };
         
-        return ca_id - 1;
+        String sql = "INSERT INTO Application (uid, text)" +
+                            "VALUES ('" + uid + "', '" + reason + "');";
+        
+        PreparedStatement stmtInsert = conn.prepareStatement(sql, generatedColumns);
+        stmtInsert.executeUpdate();
+        
+        ResultSet rs = stmtInsert.getGeneratedKeys();
+        
+        if (rs.next()) {
+            ca_id = (int) rs.getLong(1);
+        }
+        
+        if(ca_id == -1)
+            return -1;
+        
+        creator_applications.put(ca_id, new Application(uid, reason));
+        
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
+        
+        return ca_id;
     }
     
     public boolean deleteCreatorApplication(int uid)
@@ -483,12 +772,23 @@ public class DataManager
             if(entry.getValue().uid == uid)
             {
                  creator_applications.remove(entry.getKey());
+                 
+                 try {
+
+                String sql = "DELETE FROM Application WHERE uid = '" + uid + "');";
+
+                PreparedStatement stmtInsert = conn.prepareStatement(sql);
+                stmtInsert.executeUpdate();
+                
+                } catch ( Exception e ) {
+                 System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+                 System.exit(0);
+                }
+                 
+                 break;
             }
         }
        
-        
-        // TODO: Delete from database
-        
         return true;
     }
     
@@ -524,7 +824,28 @@ public class DataManager
         user.tutor_la = tutor_la;
         user.admin_notes = note;
         
-        // TODO: Update in database!  
+        int tt = 0;
+        int cr = 0;
+        
+        if(tutor)
+            tt = 1;
+        
+        if(co_creator)
+            cr = 1;
+        
+        try {
+            
+            String sql = "UPDATE Users SET username = '" + u + "', name = '" + fn + "', surname = '" + sn +"', mail = '" + m +
+                                "', password = '" + pw + "', level = '" + lvl + "', creator_la = '" + creator_la + "', tutor_la = '" + tutor_la + "', admin_notes = '" + note +
+                                "', tutor = '" + tt + "', co_creator = '" + cr + "' WHERE ID = '" + uid + "';";
+            
+             PreparedStatement stmtInsert = conn.prepareStatement(sql);
+             stmtInsert.executeUpdate();
+             
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
         
         return true;
     }
@@ -566,7 +887,17 @@ public class DataManager
     {
         users.remove(uid);
         
-        // TODO: Delete from database
+        try {
+            
+            String sql = "DELETE FROM Users WHERE ID = '" + uid + "';";
+            
+             PreparedStatement stmtInsert = conn.prepareStatement(sql);
+             stmtInsert.executeUpdate();
+             
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
         
         return true;
     }
@@ -772,59 +1103,7 @@ public class DataManager
         
         return true;
     }
-    
-    
-    public boolean deleteCategory(int laid, int catid)
-    {
-        LearningApp lapp = la.get(laid);
-        
-        for(HashMap.Entry<Integer, LearningUnit> entry : lapp.lu.entrySet())
-        {
-            if(entry.getValue().cat_id == catid)
-               entry.getValue().cat_id = -1; 
-        }
-        
-        lapp.categories.remove(catid);
-        
-        // TODO: Delete from database
-        
-        return true;
-    }
-    
-    public boolean saveCategory(int laid, int catid, String cat)
-    {
-        LearningApp lapp = la.get(laid);
-        lapp.categories.replace(catid, cat);
-        
-        // TODO: Save in database
-        
-        return true;
-    }
-    
-    public boolean categoryExists(int laid, String name)
-    {
-        LearningApp lapp = la.get(laid);
-        
-        if(lapp.categories.containsValue(name))
-            return true;
-        
-        return false;
-    }
-    
-    public int getCategoryID(int laid, String name)
-    {
-        int id = -1;
-        LearningApp lapp = la.get(laid);
-        
-        for(HashMap.Entry<Integer, String> entry : lapp.categories.entrySet())
-        {
-            if(entry.getValue().equals(name))
-                return entry.getKey();
-        }
-        
-        return id;
-    }
-    
+         
     public boolean removeFromExams(int laid, int luid)
     {
             
@@ -850,24 +1129,55 @@ public class DataManager
     
     public boolean addFeedback(int uid, int tutor, int laid, int exid, String feedback)
     {
-        feedbacks.put(feedback_id++, new Feedback(uid, tutor, laid, exid, feedback));
+        try {
+        int feedback_id = -1;   
+        String generatedColumns[] = { "ID" };
         
-        // TODO: Add to database
+        String sql = "INSERT INTO Feedback (uid, tutor_id, laid, ex_id, feedback)" +
+                            "VALUES ('" + uid + "', '" + tutor + "', '" + laid + "', '" + exid + "', '" + feedback + "');";
         
+        PreparedStatement stmtInsert = conn.prepareStatement(sql, generatedColumns);
+        stmtInsert.executeUpdate();
+        
+        ResultSet rs = stmtInsert.getGeneratedKeys();
+        
+        if (rs.next()) {
+            feedback_id = (int) rs.getLong(1);
+        }
+        
+        if(feedback_id == -1)
+            return false;
+        
+        feedbacks.put(feedback_id, new Feedback(uid, tutor, laid, exid, feedback));
+        
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
+                
         return true;
     }
     
     
     public boolean deleteFeedback(int uid, int tutor, int laid, int exid)
     {
-         for(int i = 0; i < feedbacks.size(); i++)
+         for(HashMap.Entry<Integer, Feedback> entry : feedbacks.entrySet())
          {
-             Feedback f = feedbacks.get(i);
+             Feedback f = entry.getValue();
              
              if(f.uid == uid && f.ex_id == exid && f.laid == laid && f.tutor_id == tutor)
              {
-                 feedbacks.remove(i);
-                 // TODO: Delete from database
+                 feedbacks.remove(entry.getKey());
+                 try {
+                String sql = "DELETE FROM Feedback WHERE uid = '" + uid + "' AND tutor_id = '" + tutor + "' AND laid = '" + laid + "' AND ex_id = '" + exid + "';";
+
+                PreparedStatement stmtInsert = conn.prepareStatement(sql);
+                stmtInsert.executeUpdate();
+
+                } catch ( Exception e ) {
+                 System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+                 System.exit(0);
+                }
                  break;
              }
                  
@@ -878,19 +1188,50 @@ public class DataManager
     
     public int addNewMaterial(int laid, int name, String type, String text)
     {
+        int mat_id = -1;        
+        try {
+        String generatedColumns[] = { "ID" };
         
-        int id = la.get(laid).addMaterial(new Material(name, type, text));
+        String sql = "INSERT INTO Materials (added_by, type, text, laid)" +
+                            "VALUES ('" + name + "', '" + type + "', '" + text + "', '" + laid + "');";
         
-        // TODO: Add to database
-        return id;
+        PreparedStatement stmtInsert = conn.prepareStatement(sql, generatedColumns);
+        stmtInsert.executeUpdate();
+        
+        ResultSet rs = stmtInsert.getGeneratedKeys();
+        
+        
+        if (rs.next()) {
+            mat_id = (int) rs.getLong(1);
+        }
+        
+        if(mat_id == -1)
+            return -1;
+        
+        la.get(laid).materials.put(mat_id, new Material(name, type, text));
+        
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
+        
+        return mat_id;
     }
     
     public boolean removeMaterial(int laid, int id)
     {
+        try {
+            String sql = "DELETE FROM Materials WHERE laid = '" + laid + "' AND ID = '" + id + "';";
+
+            PreparedStatement stmtInsert = conn.prepareStatement(sql);
+            stmtInsert.executeUpdate();
+
+            la.get(laid).materials.remove(id);
         
-        la.get(laid).deleteMaterial(id);
-        
-        // TODO: Remove from database
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
         
         return true;
     }

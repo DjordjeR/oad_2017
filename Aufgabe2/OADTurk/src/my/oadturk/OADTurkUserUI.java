@@ -7,10 +7,6 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,23 +14,14 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -42,12 +29,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -109,7 +94,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         {
             JLabel lab6 = new JLabel(entry.getValue().name);
             lab6.setPreferredSize(new Dimension(150, 30));
-            jTabbedPane2.setTabComponentAt(entry.getKey(), lab6);
+            jTabbedPane2.setTabComponentAt(entry.getKey() - 1, lab6);
         }
         
         jTabbedPane2.setTabPlacement(JTabbedPane.LEFT);
@@ -118,7 +103,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         {
             JLabel lab6 = new JLabel(entry.getValue().name);
             lab6.setPreferredSize(new Dimension(150, 30));
-            jTabbedPane3.setTabComponentAt(entry.getKey(), lab6);
+            jTabbedPane3.setTabComponentAt(entry.getKey() - 1, lab6);
         }
         
         jTabbedPane3.setTabPlacement(JTabbedPane.LEFT);
@@ -127,7 +112,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
         {
             JLabel lab6 = new JLabel(entry.getValue().name);
             lab6.setPreferredSize(new Dimension(150, 30));
-            jTabbedPane4.setTabComponentAt(entry.getKey(), lab6);
+            jTabbedPane4.setTabComponentAt(entry.getKey() - 1, lab6);
         }
         
         jTabbedPane4.setTabPlacement(JTabbedPane.LEFT);
@@ -468,7 +453,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                 jComboBox1.addItem(entry.getValue().name);
             }
             
-            session.manager.users.get(session.id).creator_la = 0;
+            session.manager.users.get(session.id).creator_la = 1;
            
         }
         
@@ -602,7 +587,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     
     public void loadRandomQuestion()
     {
-        LearningApp lapp = manager.la.get(jTabbedPane2.getSelectedIndex());
+        LearningApp lapp = manager.la.get(jTabbedPane2.getSelectedIndex() + 1);
         
         if(lapp.lu.size() > 0)
         {
@@ -610,14 +595,14 @@ public class OADTurkUserUI extends javax.swing.JFrame {
             while(true)
             {
                 ArrayList<Integer> keys = new ArrayList<Integer>(lapp.lu.keySet());
-                int randomIndex = new Random().nextInt(keys.size());
+                int randomIndex = new Random().nextInt(keys.size()) + 1;
                 lunit = lapp.lu.get(randomIndex);
                 
                 if(randomIndex == loaded_lu)
                     continue;
                 
                 loaded_lu = randomIndex;
-                
+                                
                 if(lunit.approved == 1)
                     break;
                 
@@ -1521,7 +1506,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     {
         
         if(manager.users.get(session.id).level >= 3 && session.manager.users.get(session.id).creator_la == -1)
-            session.manager.users.get(session.id).creator_la = 0;
+            session.manager.users.get(session.id).creator_la = 1;
         
         jPanel2.removeAll();
         if(manager.users.get(session.id).level >= 2)
@@ -2079,7 +2064,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
             tutor_button.addMouseListener(new java.awt.event.MouseAdapter() {
                     public void mousePressed(java.awt.event.MouseEvent evt) {
                         
-                        int uid = tutor_combo.getSelectedIndex();
+                        int uid = tutor_combo.getSelectedIndex() + 1;
                          if (tutor_model.getRowCount() > 0) 
                         {
                             for (int i = tutor_model.getRowCount() - 1; i > -1; i--) 
@@ -2188,7 +2173,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
 
     private void jTabbedPane2StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jTabbedPane2StateChanged
         // TODO add your handling code here:
-        if(jTabbedPane2.getSelectedIndex() > 0)
+        if(jTabbedPane2.getSelectedIndex() >= 0)
         {
             loadRandomQuestion();
         }
@@ -2206,8 +2191,8 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     
     public void loadResults()
     {
-        selected_la = jTabbedPane4.getSelectedIndex();
-        LearningApp lapp = manager.la.get(jTabbedPane4.getSelectedIndex());
+        selected_la = jTabbedPane4.getSelectedIndex()  + 1;
+        LearningApp lapp = manager.la.get(jTabbedPane4.getSelectedIndex() + 1);
                 
         if (dm_results.getRowCount() > 0) 
         {
@@ -2217,6 +2202,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
             }
         }
        
+        System.out.println(session.manager.users.get(session.id).finished_exams.size());
         for(int i = 0; i < session.manager.users.get(session.id).finished_exams.size(); i++)
         {
             int id = session.manager.users.get(session.id).finished_exams.get(i).exam_id;
@@ -2418,8 +2404,8 @@ public class OADTurkUserUI extends javax.swing.JFrame {
               
     public void loadExams()
     {
-        selected_la = jTabbedPane3.getSelectedIndex();
-        LearningApp lapp = manager.la.get(jTabbedPane3.getSelectedIndex());
+        selected_la = jTabbedPane3.getSelectedIndex() + 1;
+        LearningApp lapp = manager.la.get(jTabbedPane3.getSelectedIndex() + 1);
 
         if (dm_exam.getRowCount() > 0) 
         {
@@ -2545,7 +2531,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private void jButton13MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton13MouseClicked
         // TODO add your handling code here:
 
-        OADTurkMaterials user = new OADTurkMaterials(jTabbedPane2.getSelectedIndex(), session);
+        OADTurkMaterials user = new OADTurkMaterials(jTabbedPane2.getSelectedIndex() + 1, session);
         user.setVisible(true);
 
     }//GEN-LAST:event_jButton13MouseClicked
@@ -2553,13 +2539,13 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private void jButton12MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton12MouseClicked
         // TODO add your handling code here:
 
-        if(session.manager.alreadyEvaluated(jTabbedPane2.getSelectedIndex(), loaded_lu, session.id))
+        if(session.manager.alreadyEvaluated(jTabbedPane2.getSelectedIndex() + 1, loaded_lu, session.id))
         {
             JOptionPane.showMessageDialog(rootPane, "You have already evaluated this LU!", "LU Evaluation", JOptionPane.ERROR_MESSAGE);
         }
         else
         {
-            OADTurkEvaluation user = new OADTurkEvaluation(jTabbedPane2.getSelectedIndex(), loaded_lu, session);
+            OADTurkEvaluation user = new OADTurkEvaluation(jTabbedPane2.getSelectedIndex() + 1, loaded_lu, session);
             user.setVisible(true);
         }
 
@@ -2567,7 +2553,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
-        LearningApp lapp = manager.la.get(jTabbedPane2.getSelectedIndex());
+        LearningApp lapp = manager.la.get(jTabbedPane2.getSelectedIndex() + 1);
         LearningUnit lunit = lapp.lu.get(loaded_lu);
 
         if(lunit.a1_correct == jCheckBox1.isSelected())
@@ -2614,7 +2600,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // TODO add your handling code here:
-        OADTurkNewLU login = new OADTurkNewLU(session, jTabbedPane2.getSelectedIndex());
+        OADTurkNewLU login = new OADTurkNewLU(session, jTabbedPane2.getSelectedIndex() + 1);
         login.setVisible(true);
     }//GEN-LAST:event_jButton1MouseClicked
 
@@ -2628,7 +2614,7 @@ public class OADTurkUserUI extends javax.swing.JFrame {
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
         
-        session.manager.users.get(session.id).creator_la = jComboBox1.getSelectedIndex();
+        session.manager.users.get(session.id).creator_la = jComboBox1.getSelectedIndex() + 1;
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     /**
@@ -3086,7 +3072,7 @@ class CategoryButtonEditor extends DefaultCellEditor {
             {
                 JOptionPane.showMessageDialog(button, "You successfuly deleted this category!");
                 String old_cat = lapp.categories.get(catid);
-                OADTurkUserUI.manager.deleteCategory(OADTurkUserUI.manager.users.get(OADTurkUserUI.session.id).creator_la, catid);
+                OADTurkUserUI.manager.deleteCat(OADTurkUserUI.manager.users.get(OADTurkUserUI.session.id).creator_la, catid);
                 
                 for(int i = 0; i < OADTurkUserUI.modelLUA.getRowCount(); i++)
                 {
@@ -3113,7 +3099,7 @@ class CategoryButtonEditor extends DefaultCellEditor {
             else
             {
                 JOptionPane.showMessageDialog(button, "You successfuly saved category!");
-                OADTurkUserUI.manager.saveCategory(OADTurkUserUI.manager.users.get(OADTurkUserUI.session.id).creator_la, catid, catname);
+                OADTurkUserUI.manager.saveCat(OADTurkUserUI.manager.users.get(OADTurkUserUI.session.id).creator_la, catid, catname);
 
                 for(int i = 0; i < OADTurkUserUI.modelLUA.getRowCount(); i++)
                 {
