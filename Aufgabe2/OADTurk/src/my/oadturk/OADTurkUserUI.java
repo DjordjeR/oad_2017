@@ -60,8 +60,8 @@ public class OADTurkUserUI extends javax.swing.JFrame {
 
     public static SessionInfo session;
     public static DataManager manager;
-    public int loaded_lu = 0;
-    public static int selected_la = 0;
+    public int loaded_lu = 1;
+    public static int selected_la = 1;
     
     private JTable table_exam;
     private DefaultTableModel dm_exam;

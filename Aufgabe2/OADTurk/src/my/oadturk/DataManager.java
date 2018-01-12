@@ -1,5 +1,11 @@
 package my.oadturk;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -7,18 +13,21 @@ import java.util.HashMap;
 
 public class DataManager 
 {
-    private int la_id = 0;
-    private int user_id = 0;
-    private int feedback_id = 0;
-    private int ca_id = 0;
+    private int la_id = 1;
+    private int feedback_id = 1;
+    private int ca_id = 1;
         
     public HashMap<Integer, UserInfo> users = new HashMap<>();
     public HashMap<Integer, LearningApp> la = new HashMap<>();
     public HashMap<Integer, Application> creator_applications = new HashMap();
     public HashMap<Integer, Feedback> feedbacks = new HashMap();
     
+    public static Connection conn = null;
+        
+        
     public DataManager()
     {
+        connect();
         loadUsers();
         loadLAs();
         loadCats();
@@ -34,22 +43,62 @@ public class DataManager
         
     }
     
+    public static void connect() {
+        try {
+            // db parameters
+            String url = "jdbc:sqlite:oadturk.db";
+            // create a connection to the database
+            conn = DriverManager.getConnection(url);
+            
+            System.out.println("Connection to SQLite has been established.");
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
     public boolean loadUsers()
     {
-        registerUser("1", "User Userman", "User", "Userman", "user@oadturk.at", "1", 1);
-        registerUser("tutor", "Tutor ElTutore", "Tutor", "ElTutore", "tutor@oadturk.at", "tutor", 1);
-        registerUser("cocreator", "CoCreator CoCreatori", "CoCreator", "CoCreatori", "co-creator@oadturk.at", "cocreator", 2);
-        registerUser("creator", "Creator Creatori", "Creator", "Creatori", "creator@oadturk.at", "creator", 2);
-        registerUser("admin", "Admin Administratore", "Admin", "Administratore", "admin@oadturk.at", "admin", 3);
-        setCreator(3, 0);
-        setCoCreator(2,0);
-        setTutor(1, 0);
+        String sql = "SELECT * FROM Users";
         
-        users.get(0).finished_exams.add(new ExamResults(0, 2, 3));
-        users.get(0).registered_exams.add(new RegisteredExam(0, 0));
+        try{
+            
+            Statement stmt  = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                String u = rs.getString("username");
+                String fn = rs.getString("name");
+                String sn = rs.getString("surname");
+                String m = rs.getString("mail");
+                String pw = rs.getString("password");
+                int uid = rs.getInt("ID");
+                int lvl = rs.getInt("level");
+                String n = fn + " " + sn;
+                
+                UserInfo newUser = new UserInfo(u, n, fn, sn, m, pw, uid, lvl);
+                                
+                newUser.admin_notes = rs.getString("admin_notes");
+                newUser.creator_la = rs.getInt("creator_la");
+                newUser.tutor_la = rs.getInt("tutor_la");
+                newUser.tutor = rs.getInt("tutor") == 1;
+                newUser.co_creator = rs.getInt("co_creator") == 1;
+                users.put(uid, newUser);
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         
-        // TODO: Load from database
+        setCoCreator(3, getLAId("OAD"));
+        setTutor(2, getLAId("OAD"));
         
+        
+         // TODO: Load from database
+         
+        users.get(1).finished_exams.add(new ExamResults(0, 2, 3));
+        users.get(1).registered_exams.add(new RegisteredExam(0, 0));
+                  
         return true;
     }
     
@@ -482,10 +531,33 @@ public class DataManager
     
     public boolean registerUser(String u, String n, String fn, String sn, String m, String pw, int lvl)
     {
-        UserInfo newUser = new UserInfo(u, n, fn, sn, m, pw, user_id, lvl);
-        users.put(user_id++, newUser);
+             
+        try {
+        String generatedColumns[] = { "ID" };
         
-        // TODO: Insert in database
+        String sql = "INSERT INTO Users (username, name, surname, mail, password, level)" +
+                            "VALUES ('" + u + "', '" + fn + "', '" + sn + "', '" + m + "', '" + pw + "', '" + lvl + "');";
+        
+        PreparedStatement stmtInsert = conn.prepareStatement(sql, generatedColumns);
+        stmtInsert.executeUpdate();
+        
+        ResultSet rs = stmtInsert.getGeneratedKeys();
+        
+        int uid = -1;
+        if (rs.next()) {
+            uid = (int) rs.getLong(1);
+        }
+        
+        if(uid == -1)
+            return false;
+        
+        UserInfo newUser = new UserInfo(u, n, fn, sn, m, pw, uid, lvl);
+        users.put(uid, newUser);
+        
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
         
         return true;
     }
@@ -617,49 +689,86 @@ public class DataManager
     
     public boolean setCreator(int uid, int laid)
     {
+        try {
+
+        String sql = "UPDATE Users SET creator_la = '" + laid + "' WHERE ID = '" + uid + "';";
+        
+        PreparedStatement stmtInsert = conn.prepareStatement(sql);
+        stmtInsert.executeUpdate();
+        
         users.get(uid).creator_la = laid;
         
-        
-        // TODO: Save in database
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
         
         return true;
     }
     
     public boolean setCoCreator(int uid, int laid)
-    {
+    {      
+        try {
+
+            if(laid != -1)
+           {
+               String sql = "UPDATE Users SET creator_la = '" + laid + "', co_creator = '1' WHERE ID = '" + uid + "';";
         
-        if(laid != -1)
-        {
-            users.get(uid).creator_la = laid;
-            users.get(uid).co_creator = true;
+                PreparedStatement stmtInsert = conn.prepareStatement(sql);
+                stmtInsert.executeUpdate();
+        
+               users.get(uid).creator_la = laid;
+               users.get(uid).co_creator = true;
+           }
+           else
+           {
+               String sql = "UPDATE Users SET creator_la = '" + laid + "', co_creator = 0 WHERE ID = '" + uid + "';";
+        
+                PreparedStatement stmtInsert = conn.prepareStatement(sql);
+                stmtInsert.executeUpdate();
+                
+               users.get(uid).creator_la = laid;
+               users.get(uid).co_creator = false;
+           }
+        
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
         }
-        else
-        {
-            users.get(uid).creator_la = laid;
-            users.get(uid).co_creator = false;
-        }
-            
-        
-        // TODO: Save in database
-        
+                   
         return true;
     }
     
     
     public boolean setTutor(int uid, int tut)
     {
-         if(tut != -1)
-        {
-            users.get(uid).tutor_la = tut;
-            users.get(uid).tutor = true;
-        }
-        else
-        {
-            users.get(uid).tutor_la = tut;
-            users.get(uid).tutor = false;
-        }
+        try {
+
+            if(tut != -1)
+           {
+               String sql = "UPDATE Users SET tutor_la = '" + tut + "', tutor = 1 WHERE ID = '" + uid + "';";
         
-        // TODO: Save in database
+                PreparedStatement stmtInsert = conn.prepareStatement(sql);
+                stmtInsert.executeUpdate();
+        
+               users.get(uid).tutor_la = tut;
+               users.get(uid).tutor = true;
+           }
+           else
+           {
+               String sql = "UPDATE Users SET tutor_la = '" + tut + "', tutor = 0 WHERE ID = '" + uid + "';";
+        
+                PreparedStatement stmtInsert = conn.prepareStatement(sql);
+                stmtInsert.executeUpdate();
+                
+               users.get(uid).tutor_la = tut;
+               users.get(uid).tutor = false;
+           }
+        
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
         
         return true;
     }
