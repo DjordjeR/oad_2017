@@ -5,7 +5,6 @@
  */
 package my.oadturk;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -28,8 +27,8 @@ public class UserInfo {
     public boolean tutor = false;
     public String admin_notes;
     
-    public ArrayList<RegisteredExam> registered_exams = new ArrayList<>();
-    public ArrayList<ExamResults> finished_exams = new ArrayList<>();
+    public HashMap<Integer, RegisteredExam> registered_exams = new HashMap<>();
+    public HashMap<Integer, ExamResults> finished_exams = new HashMap<>();
     
     public UserInfo(String u, String n, String fn, String sn, String m, String pw, int i, int lvl)
     {

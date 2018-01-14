@@ -6,6 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -30,11 +33,10 @@ public class DataManager
         loadExams();
         loadMaterials();
         loadFeedbacks();
-        loadCApplications();
-     
-        //loadFinishedExams();
-        //loadRegisteredExams();
-        //loadEvaluations();
+        loadCApplications();     
+        loadFinishedExams();
+        loadRegisteredExams();
+        loadEvaluations();
         
     }
     
@@ -83,14 +85,7 @@ public class DataManager
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        
-                
-         // TODO: Load from database
-         
-        users.get(1).finished_exams.add(new ExamResults(1, 2, 3));
-        users.get(1).registered_exams.add(new RegisteredExam(1, 3));
-       
-                  
+     
         return true;
     }
     
@@ -272,55 +267,144 @@ public class DataManager
     
     private boolean loadExams()
     {
-        Calendar dat = Calendar.getInstance();
-        dat.set(2017, 10, 25, 23, 59, 00);
         
-        Calendar unt = Calendar.getInstance();
-        unt.set(2017, 11, 31, 23, 59, 00);
+        String sql = "SELECT * FROM Exam";
         
-        int exid = insertExam(getLAId("OAD"), "Exam1", dat, unt, 1, 4, 1, 0);
+        try{
+            
+            Statement stmt  = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                int id = rs.getInt("ID");
+                int laid = rs.getInt("la_id");
+                
+                String n = rs.getString("name");
+                
+                int num = rs.getInt("num_of_questions");
+                float pts = rs.getFloat("points_per_question");
+                int type = rs.getInt("type");
+                int code = rs.getInt("code");
+                
+                DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+                
+                String date = rs.getString("date");
+                Calendar dat = Calendar.getInstance();
+                String until = rs.getString("until");
+                Calendar unt = Calendar.getInstance();
+                
+                try{
+                    dat.setTime(dateFormat.parse(date));
+                    unt.setTime(dateFormat.parse(until));
+                }
+                catch (ParseException e)
+                {
+                    System.out.println("Exception :"+e);  
+                } 
+
+                String questions = rs.getString("questions");
+                String[] split = questions.split(";");
+                ArrayList<Integer> list = new ArrayList<>();
+                
+                for(int i = 0; i < split.length; i++)
+                {
+                    list.add(Integer.parseInt(split[i]));
+                }
+                
+                la.get(laid).exam.put(id, new Exam(n, dat, unt, type, num, pts, code));
+                
+                if(type == 0)
+                    la.get(laid).exam.get(id).categories = list;
+                else if(type == 1)
+                    la.get(laid).exam.get(id).lus = list;
+                
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         
-        ArrayList<Integer> questions = new ArrayList<>();
-        questions.add(0);
-        questions.add(1);
-        questions.add(2);
-        questions.add(3);
+        return true;
+    }
     
-        insertExamQuestions(getLAId("OAD"), exid, questions);
+    public boolean loadFinishedExams()
+    {
+        String sql = "SELECT * FROM ExamResults";
         
+        try{
+            
+            Statement stmt  = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                int exid = rs.getInt("exam_id");
+                int id = rs.getInt("ID");
+                int uid = rs.getInt("user_id");                   
+                int laid = rs.getInt("laid");
+                float points = rs.getFloat("points");                
+                
+                users.get(uid).finished_exams.put(id, new ExamResults(laid, exid, points));
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         
-        dat = Calendar.getInstance();
-        dat.set(2017, 11, 25, 23, 59, 00);
+        return true;
+    }
+    
+    public boolean loadRegisteredExams()
+    {
+        String sql = "SELECT * FROM RegisteredExams";
         
-        unt = Calendar.getInstance();
-        unt.set(2017, 11, 31, 23, 59, 00);
+        try{
+            
+            Statement stmt  = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                int exid = rs.getInt("exid");
+                int id = rs.getInt("ID");
+                int uid = rs.getInt("user_id");                   
+                int laid = rs.getInt("laid");               
+                
+                users.get(uid).registered_exams.put(id, new RegisteredExam(laid, exid));
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         
-        exid = insertExam(getLAId("OAD"), "Exam2", dat, unt, 1, 4, 1, 0);
-           
-        insertExamQuestions(getLAId("OAD"), exid, questions);
+        return true;
+    }
+    
+    public boolean loadEvaluations()
+    {
+        String sql = "SELECT * FROM Evaluations";
         
-        dat = Calendar.getInstance();
-        dat.set(2018, 9, 25, 23, 59, 00);
-        
-        unt = Calendar.getInstance();
-        unt.set(2018, 9, 31, 23, 59, 00);
-        
-        exid = insertExam(getLAId("OAD"), "Exam3", dat, unt, 1, 4, 1, 0);
-           
-        insertExamQuestions(getLAId("OAD"), exid, questions);
-        
-        
-        dat = Calendar.getInstance();
-        dat.set(2018, 9, 25, 23, 59, 00);
-        
-        unt = Calendar.getInstance();
-        unt.set(2018, 9, 31, 23, 59, 00);
-        
-        exid = insertExam(getLAId("OAD"), "Exam4", dat, unt, 1, 4, 1, 0);
-           
-        insertExamQuestions(getLAId("OAD"), exid, questions);
-        
-        // TODO: Load from database
+        try{
+            
+            Statement stmt  = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            while (rs.next()) {
+                int luid = rs.getInt("luid");
+                int id = rs.getInt("ID");
+                int uid = rs.getInt("uid");                   
+                int laid = rs.getInt("laid"); 
+                
+                int he = rs.getInt("eval_help");
+                int ha = rs.getInt("eval_hard");
+                int q = rs.getInt("eval_quest");
+                int a = rs.getInt("eval_answ");
+                int ev = rs.getInt("evaluation");
+                
+                la.get(laid).lu.get(luid).evaluations.put(id, new Evaluation(uid, he, ha, q, a, ev));
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
         
         return true;
     }
@@ -680,56 +764,159 @@ public class DataManager
     }
     
     
-    public int insertExam(int laid, String n, Calendar d, Calendar u, int t, int num, float pts, int cd)
+    public int insertExam(int laid, String n, Calendar d, Calendar u, int t, int num, float pts, int cd, ArrayList<Integer> list)
     {
-        LearningApp lapp = la.get(laid);
-        Exam ex = new Exam(n, d, u, t, num, pts, cd);
+
+         int ex_id = -1;
         
+        try {
+        String generatedColumns[] = { "ID" };
         
-        // TODO: Insert into database
+        String que = "";
         
-        return lapp.addExam(ex);
-    }
-    
-    public boolean insertExamQuestions(int laid, int exid, ArrayList<Integer> list)
-    {
-        LearningApp lapp = la.get(laid);
-        for(Integer temp : list) 
+        for(int i = 0; i < list.size(); i++)
         {
-            lapp.exam.get(exid).insertExamQuestion(temp);
+            que += list.get(i).toString();
+            
+            if(i != list.size() - 1)
+                que += ";";
         }
         
+        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        String dat = dateFormat.format(d.getTime());
+        String unt = dateFormat.format(u.getTime());
         
-        // TODO: Insert in database
+        String sql = "INSERT INTO Exam (la_id, name, date, until, code, type, num_of_questions, points_per_question, questions)" +
+                            "VALUES ('" + laid + "', '" + n + "', '" + dat + "', '" + unt + "', '" + cd + "', '" + t + "', '" + num + "', '" + pts + "', '" + que + "');";
         
+        PreparedStatement stmtInsert = conn.prepareStatement(sql, generatedColumns);
+        stmtInsert.executeUpdate();
         
-        return true;
-    }
-    
-    
-    public boolean insertExamCategories(int laid, int exid, ArrayList<Integer> list)
-    {
-        LearningApp lapp = la.get(laid);
-        for(int i = 0; i < list.size(); i++) 
-        {
-            lapp.exam.get(exid).insertExamCategory(list.get(i));
+        ResultSet rs = stmtInsert.getGeneratedKeys();
+        
+        if (rs.next()) {
+            ex_id = (int) rs.getLong(1);
         }
-                
-        // TODO: Insert in database
         
+        if(ex_id == -1)
+            return -1;
         
-        return true;
+        la.get(laid).exam.put(ex_id, new Exam(n, d, u, t, num, pts, cd));
+        
+        if(t == 0)
+        {
+            la.get(laid).exam.get(ex_id).categories = list;
+        }
+        else if(t == 1)
+        {
+            la.get(laid).exam.get(ex_id).lus = list;
+        }    
+        
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
+        
+        return ex_id;
     }
-    
+        
     public boolean deleteExam(int laid, int id)
     {
-        LearningApp lapp = la.get(laid);
-        lapp.deleteExam(id);
+        try {
+
+        String sql = "DELETE FROM Exam WHERE ID = '" + id + "' AND laid = '" + laid + "');";
+
+        PreparedStatement stmtInsert = conn.prepareStatement(sql);
+        stmtInsert.executeUpdate();
         
-        
-        // TODO: Delete from database
+        la.get(laid).exam.remove(id);
+
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
         
         return true; 
+    }
+    
+    public void editExam(int laid, int exid, String n, Calendar d, Calendar u, int t, int num, float pts, int cd, ArrayList<Integer> list)
+    {
+        Exam ex = la.get(laid).exam.get(exid);
+        ex.name = n;
+        ex.date = d;
+        ex.until = u;
+        ex.type = t;
+        ex.num_of_questions = num;
+        ex.points_per_question = pts;
+        ex.code = cd;
+        
+        ex.lus.clear();
+        ex.categories.clear();
+        
+         if(t == 0)
+        {
+            ex.categories = list;
+        }
+        else if(t == 1)
+        {
+            ex.lus = list;
+        }
+         
+        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        String dat = dateFormat.format(d.getTime());
+        String unt = dateFormat.format(u.getTime());
+        
+        String que = "";
+        
+        for(int i = 0; i < list.size(); i++)
+        {
+            que += list.get(i).toString();
+            
+            if(i != list.size() - 1)
+                que += ";";
+        }
+         
+         try {
+            
+            String sql = "UPDATE Exam SET  name = '" + n + "', date = '" + dat +"', until = '" + unt +
+                                "', code = '" + cd + "', type = '" + t + "', num_of_questions = '" + num + "', points_per_question = '" 
+                                + pts + "', questions = '" + que +"'  WHERE ID = '" + exid + "' AND la_id = '" + laid + "';";
+            
+             PreparedStatement stmtInsert = conn.prepareStatement(sql);
+             stmtInsert.executeUpdate();
+             
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
+
+    }
+    
+    public boolean removeFromExams(int laid, int luid)
+    {
+            
+        LearningApp lapp = la.get(laid);
+        
+        for(HashMap.Entry<Integer, Exam> entry : lapp.exam.entrySet())
+        {
+            for(int i = 0; i < entry.getValue().lus.size(); i++)
+            {
+                if(entry.getValue().lus.get(i) == luid)
+                {
+                    entry.getValue().lus.remove(i);
+                    break;
+                }
+            }
+            
+            Exam ex = entry.getValue();
+            
+            if(ex.type == 0)
+                editExam(laid, entry.getKey(), ex.name, ex.date, ex.until, ex.type, ex.num_of_questions, ex.points_per_question, ex.code, ex.categories);
+            else if(ex.type == 1)
+                editExam(laid, entry.getKey(), ex.name, ex.date, ex.until, ex.type, ex.num_of_questions, ex.points_per_question, ex.code, ex.lus);
+        }
+        
+        return true;
     }
     
     public int addCreatorApplication(int uid, String reason)
@@ -885,14 +1072,15 @@ public class DataManager
     
     public boolean deleteUser(int uid)
     {
-        users.remove(uid);
-        
+              
         try {
             
             String sql = "DELETE FROM Users WHERE ID = '" + uid + "';";
             
              PreparedStatement stmtInsert = conn.prepareStatement(sql);
              stmtInsert.executeUpdate();
+             
+             users.remove(uid);
              
         } catch ( Exception e ) {
          System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -904,18 +1092,63 @@ public class DataManager
     
     public boolean registerForExam(int uid, int laid, int exid)
     {
-        users.get(uid).registered_exams.add(new RegisteredExam(laid, exid));
         
-        // TODO: Insert in database
+         try {
+        String generatedColumns[] = { "ID" };
+        
+        String sql = "INSERT INTO RegisteredExams (user_id, laid, exid)" +
+                            "VALUES ('" + uid + "', '" + laid + "', '" + exid + "');";
+        
+        PreparedStatement stmtInsert = conn.prepareStatement(sql, generatedColumns);
+        stmtInsert.executeUpdate();
+        
+        ResultSet rs = stmtInsert.getGeneratedKeys();
+        
+        int reid = -1;
+        if (rs.next()) {
+            reid = (int) rs.getLong(1);
+        }
+        
+        if(reid == -1)
+            return false;
+        
+        users.get(uid).registered_exams.put(reid, new RegisteredExam(laid, exid));
+        
+        } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }
         
         return true;
     }
     
     public boolean addFinishedExam(int uid, int l, int e, float points)
     {
-        users.get(uid).finished_exams.add(new ExamResults(l, e, points));
+        try {
+        String generatedColumns[] = { "ID" };
         
-        // TODO: Insert in database
+        String sql = "INSERT INTO ExamResults (user_id, exam_id, points, laid)" +
+                            "VALUES ('" + uid + "', '" + e + "', '" + points + "', '" + l + "');";
+        
+        PreparedStatement stmtInsert = conn.prepareStatement(sql, generatedColumns);
+        stmtInsert.executeUpdate();
+        
+        ResultSet rs = stmtInsert.getGeneratedKeys();
+        
+        int feid = -1;
+        if (rs.next()) {
+            feid = (int) rs.getLong(1);
+        }
+        
+        if(feid == -1)
+            return false;
+        
+        users.get(uid).finished_exams.put(feid, new ExamResults(l, e, points));
+        
+        } catch ( Exception ex ) {
+         System.err.println( ex.getClass().getName() + ": " + ex.getMessage() );
+         System.exit(0);
+        }
                 
         return true;
     }
@@ -983,20 +1216,34 @@ public class DataManager
     public boolean deleteRegisteredExam(int uid, int laid, int exid)
     {
         UserInfo user = users.get(uid);
-        
-        for(int i = 0; i < user.registered_exams.size(); i++)
+        int reid = -1;
+        for(HashMap.Entry<Integer, RegisteredExam> entry : user.registered_exams.entrySet())
         {
-            RegisteredExam er = user.registered_exams.get(i);
+            RegisteredExam er = entry.getValue();
             
             if(er.exid == exid && er.laid == laid)
             {
-                user.registered_exams.remove(i);
+                user.registered_exams.remove(entry.getKey());
+                reid = entry.getKey();
                 break;
             }
         }
         
-        // TODO: Remove from database
-        
+        if(reid != -1)
+        {
+            try {
+            
+            String sql = "DELETE FROM RegisteredExams WHERE ID = '" + reid + "';";
+            
+             PreparedStatement stmtInsert = conn.prepareStatement(sql);
+             stmtInsert.executeUpdate();
+
+            } catch ( Exception e ) {
+             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+             System.exit(0);
+            }
+        }
+               
         
         return true;
     }
@@ -1006,9 +1253,9 @@ public class DataManager
     {
         UserInfo user = users.get(uid);
         
-        for(int i = 0; i < user.finished_exams.size(); i++)
+        for(HashMap.Entry<Integer, ExamResults> entry : user.finished_exams.entrySet())
         {
-            ExamResults er = user.finished_exams.get(i);
+            ExamResults er = entry.getValue();
             
             if(er.exam_id == exid && er.laid == laid)
                 return true;
@@ -1100,29 +1347,6 @@ public class DataManager
          System.err.println( e.getClass().getName() + ": " + e.getMessage() );
          System.exit(0);
         }
-        
-        return true;
-    }
-         
-    public boolean removeFromExams(int laid, int luid)
-    {
-            
-        LearningApp lapp = la.get(laid);
-        
-        for(HashMap.Entry<Integer, Exam> entry : lapp.exam.entrySet())
-        {
-            for(int i = 0; i < entry.getValue().lus.size(); i++)
-            {
-                if(entry.getValue().lus.get(i) == luid)
-                {
-                    entry.getValue().lus.remove(i);
-                    break;
-                }
-            }
-        }
-        
-       // TODO: Remove from database
-        
         
         return true;
     }
@@ -1238,20 +1462,52 @@ public class DataManager
     
     
     public int addNewEvaluation(int laid, int luid, int u, int he, int ha, int q, int a, int e)
-    {
+    {              
+        int eval_id = -1;        
+        try {
+        String generatedColumns[] = { "ID" };
         
-        int id = la.get(laid).lu.get(luid).addEvaluation(new Evaluation(u, he, ha, q, a, e));
+        String sql = "INSERT INTO Evaluations (laid, luid, uid, eval_help, eval_hard, eval_quest, eval_answ, evaluation)" +
+                            "VALUES ('" + laid + "', '" + luid + "', '" + u + "', '" + he + "', '" + ha + "', '" + q + "', '" + a + "', '" + e + "');";
         
-        // TODO: Add to database
-        return id;
+        PreparedStatement stmtInsert = conn.prepareStatement(sql, generatedColumns);
+        stmtInsert.executeUpdate();
+        
+        ResultSet rs = stmtInsert.getGeneratedKeys();
+        
+        
+        if (rs.next()) {
+            eval_id = (int) rs.getLong(1);
+        }
+        
+        if(eval_id == -1)
+            return -1;
+        
+        la.get(laid).lu.get(luid).evaluations.put(eval_id, new Evaluation(u, he, ha, q, a, e));
+        
+        } catch ( Exception ex ) {
+         System.err.println( ex.getClass().getName() + ": " + ex.getMessage() );
+         System.exit(0);
+        }
+        
+        return eval_id;
     }
     
     public boolean removeEvaluation(int laid, int luid, int id)
-    {
+    {      
+                
+        try {
+            String sql = "DELETE FROM Evaluations WHERE laid = '" + laid + "' AND ID = '" + id + "' AND luid = '" + luid + "';";
+
+            PreparedStatement stmtInsert = conn.prepareStatement(sql);
+            stmtInsert.executeUpdate();
+
+            la.get(laid).lu.get(luid).evaluations.remove(id);
         
-        la.get(laid).lu.get(luid).deleteEvaluationl(id);
-        
-        // TODO: Remove from database
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
         
         return true;
     }

@@ -2073,9 +2073,9 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                             }
                         }
 
-                        for(int i = 0; i < session.manager.users.get(uid).finished_exams.size(); i++)
+                        for(HashMap.Entry<Integer, ExamResults> entry : session.manager.users.get(uid).finished_exams.entrySet())
                         {
-                            ExamResults res = session.manager.users.get(uid).finished_exams.get(i);
+                            ExamResults res = entry.getValue();
                             Exam ex = session.manager.la.get(session.manager.users.get(session.id).tutor_la).exam.get(res.exam_id);
                             
                             float points = res.points;
@@ -2202,16 +2202,15 @@ public class OADTurkUserUI extends javax.swing.JFrame {
             }
         }
        
-        System.out.println(session.manager.users.get(session.id).finished_exams.size());
-        for(int i = 0; i < session.manager.users.get(session.id).finished_exams.size(); i++)
+        for(HashMap.Entry<Integer, ExamResults> entry : session.manager.users.get(session.id).finished_exams.entrySet())
         {
-            int id = session.manager.users.get(session.id).finished_exams.get(i).exam_id;
-            int exlid = session.manager.users.get(session.id).finished_exams.get(i).laid;
+            int id = entry.getValue().exam_id;
+            int exlid = entry.getValue().laid;
             
             if(exlid == selected_la)
             {
                 Exam ex = lapp.exam.get(id);
-                ExamResults exre = session.manager.users.get(session.id).finished_exams.get(i);
+                ExamResults exre = entry.getValue();
                 DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
                 Calendar cal = ex.date;
 
@@ -2320,11 +2319,10 @@ public class OADTurkUserUI extends javax.swing.JFrame {
                 
                 //content of the table here
                 
-                int num = usr.finished_exams.size();
                 
-                for (int i=0; i < num; i++)
+                for (HashMap.Entry<Integer, ExamResults> entry : usr.finished_exams.entrySet())
                 {
-                    ExamResults er = usr.finished_exams.get(i);
+                    ExamResults er = entry.getValue();
                     Exam ex = session.manager.la.get(er.laid).exam.get(er.exam_id);
                     
                     int id = er.exam_id;
@@ -2429,9 +2427,9 @@ public class OADTurkUserUI extends javax.swing.JFrame {
             {
                 String text = "Register";
 
-                for(int i = 0; i < session.manager.users.get(session.id).registered_exams.size(); i++)
+                for(HashMap.Entry<Integer, RegisteredExam> entry2 : session.manager.users.get(session.id).registered_exams.entrySet())
                 {
-                    RegisteredExam rex = session.manager.users.get(session.id).registered_exams.get(i);
+                    RegisteredExam rex = entry2.getValue();
                     if(rex.laid == selected_la && rex.exid == id && current.after(cal))
                     {
                         text = "Start";

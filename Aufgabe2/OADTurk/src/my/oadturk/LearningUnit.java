@@ -38,7 +38,6 @@ public class LearningUnit
     
     public int cat_id;
     
-    private int eval_id = 0;
     public HashMap<Integer, Evaluation> evaluations = new HashMap();
     
     public LearningUnit(String q, String d, int dt, String as1, int as1t,
@@ -101,20 +100,5 @@ public class LearningUnit
         approved = app;
         
         cat_id = cat;
-    }
-    
-     public int addEvaluation(Evaluation eval)
-    {
-        evaluations.put(eval_id++, eval);
-        
-        return eval_id - 1;
-    }
-    
-    public void deleteEvaluationl(int id)
-    {
-        evaluations.remove(id);
-    }
-    
-    
-    
+    }  
 }
