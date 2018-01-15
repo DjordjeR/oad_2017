@@ -962,7 +962,7 @@ public class DataManager
                  
                  try {
 
-                String sql = "DELETE FROM Application WHERE uid = '" + uid + "');";
+                String sql = "DELETE FROM Application WHERE uid = '" + uid + "';";
 
                 PreparedStatement stmtInsert = conn.prepareStatement(sql);
                 stmtInsert.executeUpdate();
